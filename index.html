@@ -63,8 +63,12 @@
     }
 
     .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 6;
       margin-bottom: 18px;
-      padding: 6px 2px 0;
+      padding: 8px 2px 16px;
+      background: linear-gradient(180deg, var(--bg-color) 78%, rgba(236, 238, 239, 0));
     }
 
     .page-step {
@@ -88,6 +92,10 @@
       font-size: 17px;
       line-height: 1.6;
       color: var(--muted-color);
+    }
+
+    .page-badge {
+      margin-bottom: 12px;
     }
 
     .embed-shell {
@@ -126,6 +134,7 @@
       grid-template-columns: 34px 1fr;
       gap: 16px;
       min-height: 108px;
+      transition: opacity 0.28s ease, transform 0.28s ease;
     }
 
     .step-item::after {
@@ -165,6 +174,7 @@
 
     .step-copy {
       padding-top: 2px;
+      transition: opacity 0.28s ease, transform 0.28s ease;
     }
 
     .step-title {
@@ -208,14 +218,6 @@
       display: flex;
       flex-direction: column;
       min-height: 640px;
-    }
-
-    .section-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 22px;
     }
 
     .back-button,
@@ -270,17 +272,57 @@
       border-radius: 999px;
       background: var(--primary-color);
       box-shadow: 0 0 0 5px rgba(53, 111, 255, 0.12);
+      animation: softPulse 3.2s ease-in-out infinite;
     }
 
     .section-divider {
       height: 1px;
-      margin: 0 0 28px;
+      margin: 0 0 24px;
       background: var(--line-color);
     }
 
     .section-layout {
       max-width: 860px;
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .section-copy {
+      max-width: 560px;
+      margin-bottom: 18px;
+    }
+
+    .section-kicker {
+      margin: 0 0 16px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--primary-color);
+    }
+
+    .section-heading {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--secondary-color);
+    }
+
+    .section-text {
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--muted-color);
+    }
+
+    .section-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
     }
 
     .form-grid,
@@ -320,7 +362,7 @@
       background: var(--surface-color);
       color: var(--secondary-color);
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
     }
 
     .field input::placeholder {
@@ -362,11 +404,18 @@
     .action-row,
     .quote-actions {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 12px;
-      margin-top: 30px;
+      margin-top: auto;
       padding-top: 22px;
       border-top: 1px solid var(--line-color);
+    }
+
+    .action-row .primary-button,
+    .quote-actions .primary-button {
+      margin-left: auto;
     }
 
     .primary-button {
@@ -600,18 +649,55 @@
       cursor: pointer;
     }
 
+    .content-section.fade-in .section-copy,
+    .content-section.fade-in .section-divider,
+    .content-section.fade-in .section-body {
+      animation: softRise 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .content-section.fade-in .section-divider {
+      animation-delay: 0.04s;
+    }
+
+    .content-section.fade-in .section-body {
+      animation-delay: 0.08s;
+    }
+
     .fade-in {
-      animation: fadeIn 0.28s ease-out forwards;
+      animation: fadeIn 0.34s ease-out forwards;
     }
 
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(10px);
       }
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+
+    @keyframes softRise {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes softPulse {
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 5px rgba(53, 111, 255, 0.12);
+      }
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 0 8px rgba(53, 111, 255, 0.08);
       }
     }
 
@@ -666,7 +752,6 @@
         border-radius: 24px;
       }
 
-      .section-topbar,
       .section-layout,
       .form-grid,
       .summary-grid,
@@ -694,9 +779,13 @@
  <body class="app-body">
   <div class="page-wrap">
    <header class="page-header">
-    <p id="page-step" class="page-step">Step 1/4</p>
-    <h1 id="main-title" class="page-title">Dati immobile</h1>
-    <p id="subtitle" class="page-subtitle">Inserisci le informazioni principali per ottenere un preventivo accurato.</p>
+    <div class="topbar-badge page-badge">
+     <span class="badge-dot"></span>
+     Preventivatore Domeo
+    </div>
+    <p id="page-step" class="page-step">Configuratore in 4 passaggi</p>
+    <h1 id="main-title" class="page-title">Calcola il tuo preventivo</h1>
+    <p id="subtitle" class="page-subtitle">Completa i passaggi per ottenere un riepilogo chiaro e immediato della gestione del tuo immobile.</p>
    </header>
 
    <div class="embed-shell">
@@ -720,8 +809,8 @@
        <div id="step-3" class="step-item is-upcoming">
         <div class="step-node">3</div>
         <div class="step-copy">
-         <span class="step-title">Pagamento</span>
-         <span class="step-label">Definisci la modalità con cui vuoi attivare il servizio.</span>
+         <span class="step-title">Attivazione</span>
+         <span class="step-label">Definisci come vuoi impostare l'addebito del servizio.</span>
         </div>
        </div>
        <div id="step-4" class="step-item is-upcoming">
@@ -736,23 +825,15 @@
 
      <main class="app-main">
       <section id="section-1" class="content-section fade-in" data-step="Step 1/4" data-title="Dati immobile" data-subtitle="Inserisci le informazioni principali per ottenere un preventivo accurato.">
-      <div class="section-topbar">
-       <button type="button" class="back-button is-hidden" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-         <path d="m15 18-6-6 6-6"></path>
-        </svg>
-        Indietro
-       </button>
-       <div class="topbar-badge">
-        <span class="badge-dot"></span>
-        Preventivatore Domeo
-       </div>
+      <div class="section-copy">
+       <p class="section-kicker">Step 1</p>
+       <h2 class="section-heading">Dati immobile</h2>
+       <p class="section-text">Inserisci le informazioni essenziali per costruire un preventivo coerente con il profilo dell'immobile.</p>
       </div>
-
       <div class="section-divider"></div>
 
       <div class="section-layout">
-       <div>
+       <div class="section-body">
         <div class="form-grid">
          <div class="field full">
           <label for="property-type">Tipologia immobile</label>
@@ -802,23 +883,15 @@
       </section>
 
       <section id="section-2" class="content-section hidden" data-step="Step 2/4" data-title="Seleziona il piano" data-subtitle="Scegli il livello di gestione più adatto al tuo immobile.">
-      <div class="section-topbar">
-       <button type="button" id="btn-back-2" class="back-button">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-         <path d="m15 18-6-6 6-6"></path>
-        </svg>
-        Indietro
-       </button>
-       <div class="topbar-badge">
-        <span class="badge-dot"></span>
-        Configurazione servizio
-       </div>
+      <div class="section-copy">
+       <p class="section-kicker">Step 2</p>
+       <h2 class="section-heading">Seleziona il piano</h2>
+       <p class="section-text">Confronta le opzioni disponibili e scegli il livello di gestione più adatto al servizio che vuoi attivare.</p>
       </div>
-
       <div class="section-divider"></div>
 
       <div class="section-layout">
-       <div>
+       <div class="section-body">
         <div class="option-grid">
          <div id="plan-start" class="option-card plan-card">
           <div id="check-start" class="option-check hidden">
@@ -886,6 +959,12 @@
         </div>
 
         <div class="action-row">
+         <button type="button" id="btn-back-2" class="back-button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="m15 18-6-6 6-6"></path>
+          </svg>
+          Indietro
+         </button>
          <button type="button" id="btn-step2" class="primary-button">
           Continua
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -898,24 +977,16 @@
       </div>
       </section>
 
-      <section id="section-3" class="content-section hidden" data-step="Step 3/4" data-title="Modalita di pagamento" data-subtitle="Definisci come vuoi attivare e distribuire il costo del servizio.">
-      <div class="section-topbar">
-       <button type="button" id="btn-back-3" class="back-button">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-         <path d="m15 18-6-6 6-6"></path>
-        </svg>
-        Indietro
-       </button>
-       <div class="topbar-badge">
-        <span class="badge-dot"></span>
-        Attivazione servizio
-       </div>
+      <section id="section-3" class="content-section hidden" data-step="Step 3/4" data-title="Frequenza di addebito" data-subtitle="Scegli come distribuire nel tempo il costo del servizio.">
+      <div class="section-copy">
+       <p class="section-kicker">Step 3</p>
+       <h2 class="section-heading">Frequenza di addebito</h2>
+       <p class="section-text">Scegli se preferisci un addebito annuale o mensile per visualizzare il riepilogo finale nel formato corretto.</p>
       </div>
-
       <div class="section-divider"></div>
 
       <div class="section-layout">
-       <div>
+       <div class="section-body">
         <div class="option-grid">
          <div id="payment-annual" class="option-card plan-card">
           <div id="check-annual" class="option-check hidden">
@@ -971,6 +1042,12 @@
         </div>
 
         <div class="action-row">
+         <button type="button" id="btn-back-3" class="back-button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="m15 18-6-6 6-6"></path>
+          </svg>
+          Indietro
+         </button>
          <button type="button" id="btn-step3" class="primary-button" disabled>
           Vedi Preventivo
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -984,23 +1061,15 @@
       </section>
 
       <section id="section-4" class="content-section hidden" data-step="Step 4/4" data-title="Riepilogo preventivo" data-subtitle="Controlla il dettaglio economico finale prima di procedere.">
-      <div class="section-topbar">
-       <button type="button" id="btn-back-4" class="back-button">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-         <path d="m15 18-6-6 6-6"></path>
-        </svg>
-        Indietro
-       </button>
-       <div class="topbar-badge">
-        <span class="badge-dot"></span>
-        Preventivo pronto
-       </div>
+      <div class="section-copy">
+       <p class="section-kicker">Step 4</p>
+       <h2 class="section-heading">Riepilogo preventivo</h2>
+       <p class="section-text">Rivedi piano, pagamento e costi finali prima di procedere con l'attivazione del servizio.</p>
       </div>
-
       <div class="section-divider"></div>
 
       <div class="section-layout">
-       <div class="summary-block">
+       <div class="summary-block section-body">
         <div class="summary-grid">
          <div class="summary-card">
           <div class="summary-label">Piano selezionato</div>
@@ -1064,6 +1133,12 @@
         </div>
 
         <div class="quote-actions">
+         <button type="button" id="btn-back-4" class="back-button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="m15 18-6-6 6-6"></path>
+          </svg>
+          Indietro
+         </button>
          <button type="button" class="ghost-button">Parla con un consulente</button>
          <button type="button" class="primary-button">Richiedi attivazione</button>
         </div>
@@ -1093,8 +1168,8 @@
     let currentConfig = {};
 
     const defaultConfig = {
-      main_title: "Dati immobile",
-      subtitle: "Inserisci le informazioni principali per ottenere un preventivo accurato.",
+      main_title: "Calcola il tuo preventivo",
+      subtitle: "Completa i passaggi per ottenere un riepilogo chiaro e immediato della gestione del tuo immobile.",
       cta_calculate: "Calcola Preventivo",
       plan_start_name: "START",
       plan_full_name: "FULL",
@@ -1112,10 +1187,10 @@
           currentConfig = { ...defaultConfig, ...config };
 
           const mainTitle = document.getElementById("main-title");
-          if (mainTitle && currentStep === 1) mainTitle.textContent = currentConfig.main_title;
+          if (mainTitle) mainTitle.textContent = currentConfig.main_title;
 
           const subtitle = document.getElementById("subtitle");
-          if (subtitle && currentStep === 1) subtitle.textContent = currentConfig.subtitle;
+          if (subtitle) subtitle.textContent = currentConfig.subtitle;
 
           const ctaCalculate = document.getElementById("cta-calculate");
           if (ctaCalculate) ctaCalculate.textContent = currentConfig.cta_calculate;
@@ -1200,23 +1275,13 @@
     }
 
     function updatePageHeader() {
-      const activeSection = sections[currentStep];
-      if (!activeSection) return;
-
       const pageStep = document.getElementById("page-step");
       const mainTitle = document.getElementById("main-title");
       const subtitle = document.getElementById("subtitle");
 
-      if (pageStep) pageStep.textContent = activeSection.dataset.step || `Step ${currentStep}/4`;
-
-      if (currentStep === 1) {
-        if (mainTitle) mainTitle.textContent = currentConfig.main_title;
-        if (subtitle) subtitle.textContent = currentConfig.subtitle;
-        return;
-      }
-
-      if (mainTitle) mainTitle.textContent = activeSection.dataset.title || "";
-      if (subtitle) subtitle.textContent = activeSection.dataset.subtitle || "";
+      if (pageStep) pageStep.textContent = "Configuratore in 4 passaggi";
+      if (mainTitle) mainTitle.textContent = currentConfig.main_title;
+      if (subtitle) subtitle.textContent = currentConfig.subtitle;
     }
 
     function updateProgress() {
