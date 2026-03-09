@@ -1,0 +1,1425 @@
+<!doctype html>
+<html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domeo.it - Preventivatore</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #eceeef;
+      --surface-color: #ffffff;
+      --rail-color: #f3f6fa;
+      --panel-color: #f8fafc;
+      --line-color: #d7dfeb;
+      --text-color: #122440;
+      --muted-color: #64748b;
+      --soft-color: #96a3b5;
+      --primary-color: #356fff;
+      --secondary-color: #122440;
+      --primary-tint: #eef4ff;
+      --secondary-tint: #eff4fb;
+      --shadow-color: rgba(18, 36, 64, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .app-body {
+      padding: 24px 18px 32px;
+    }
+
+    .page-wrap {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      margin-bottom: 18px;
+      padding: 6px 2px 0;
+    }
+
+    .page-step {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted-color);
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: clamp(2rem, 4.8vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: var(--secondary-color);
+    }
+
+    .page-subtitle {
+      margin: 10px 0 0;
+      max-width: 680px;
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--muted-color);
+    }
+
+    .embed-shell {
+      width: 100%;
+      padding: 18px;
+      border-radius: 32px;
+      background: var(--surface-color);
+      box-shadow: 0 20px 60px var(--shadow-color);
+    }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 20px;
+      min-height: 700px;
+    }
+
+    .app-sidebar {
+      display: flex;
+      flex-direction: column;
+      padding: 22px 18px 26px;
+      border-radius: 24px;
+      background: var(--rail-color);
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 2px;
+    }
+
+    .step-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 16px;
+      min-height: 108px;
+    }
+
+    .step-item::after {
+      content: "";
+      position: absolute;
+      top: 40px;
+      left: 16px;
+      width: 1px;
+      height: 78px;
+      background: var(--line-color);
+    }
+
+    .step-item:last-child {
+      min-height: auto;
+    }
+
+    .step-item:last-child::after {
+      display: none;
+    }
+
+    .step-node {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(18, 36, 64, 0.32);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--secondary-color);
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .step-copy {
+      padding-top: 2px;
+    }
+
+    .step-title {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--secondary-color);
+    }
+
+    .step-label {
+      display: block;
+      max-width: 180px;
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted-color);
+    }
+
+    .step-item.is-active .step-node {
+      border-color: var(--secondary-color);
+      background: var(--secondary-color);
+      color: #ffffff;
+    }
+
+    .step-item.is-complete .step-node {
+      border-color: var(--primary-color);
+      background: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .step-item.is-upcoming .step-node {
+      color: var(--muted-color);
+      border-color: rgba(18, 36, 64, 0.22);
+    }
+
+    .app-main {
+      padding: 8px 10px 8px 0;
+    }
+
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      min-height: 640px;
+    }
+
+    .section-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .back-button,
+    .ghost-button,
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 46px;
+      padding: 0 20px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .back-button {
+      border-color: var(--line-color);
+      background: var(--surface-color);
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    .back-button:hover,
+    .ghost-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(18, 36, 64, 0.06);
+    }
+
+    .back-button.is-hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .topbar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border: 1px solid var(--line-color);
+      border-radius: 999px;
+      background: #f8fafc;
+      color: var(--secondary-color);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .badge-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--primary-color);
+      box-shadow: 0 0 0 5px rgba(53, 111, 255, 0.12);
+    }
+
+    .section-divider {
+      height: 1px;
+      margin: 0 0 28px;
+      background: var(--line-color);
+    }
+
+    .section-layout {
+      max-width: 860px;
+      flex: 1;
+    }
+
+    .form-grid,
+    .summary-grid,
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 20px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .field.full,
+    .summary-card.full,
+    .summary-block.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label,
+    .summary-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 52px;
+      padding: 0 16px;
+      border: 1px solid var(--line-color);
+      border-radius: 12px;
+      background: var(--surface-color);
+      color: var(--secondary-color);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .field input::placeholder {
+      color: #9aa6b7;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(53, 111, 255, 0.12);
+    }
+
+    .field select {
+      appearance: none;
+      padding-right: 44px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23122440' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 18px;
+    }
+
+    .input-prefix {
+      position: relative;
+    }
+
+    .input-prefix span {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      transform: translateY(-50%);
+      color: var(--muted-color);
+      font-weight: 600;
+    }
+
+    .input-prefix input {
+      padding-left: 36px;
+    }
+
+    .action-row,
+    .quote-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 30px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line-color);
+    }
+
+    .primary-button {
+      background: linear-gradient(180deg, var(--secondary-color), #091a35);
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 12px 26px rgba(18, 36, 64, 0.18);
+    }
+
+    .primary-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(18, 36, 64, 0.22);
+    }
+
+    .primary-button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .ghost-button {
+      border-color: var(--line-color);
+      background: var(--surface-color);
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    .option-card {
+      position: relative;
+      padding: 22px;
+      border: 1px solid var(--line-color);
+      border-radius: 18px;
+      background: var(--surface-color);
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+
+    .option-card:hover {
+      transform: translateY(-2px);
+      border-color: #b9c7db;
+      box-shadow: 0 16px 32px rgba(18, 36, 64, 0.07);
+    }
+
+    .option-card.selected {
+      border-color: var(--primary-color);
+      background: var(--primary-tint);
+      box-shadow: 0 20px 40px rgba(53, 111, 255, 0.14);
+    }
+
+    .option-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(53, 111, 255, 0.1);
+      color: var(--primary-color);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .option-check {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .option-title {
+      margin: 18px 0 6px;
+      font-size: 22px;
+      line-height: 1.2;
+      color: var(--secondary-color);
+    }
+
+    .option-subtitle {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted-color);
+    }
+
+    .option-list {
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-list li {
+      display: flex;
+      gap: 10px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--muted-color);
+    }
+
+    .option-list svg {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      margin-top: 4px;
+      color: var(--primary-color);
+    }
+
+    .option-footer {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(18, 36, 64, 0.08);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+
+    .summary-block {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .summary-card,
+    .summary-panel,
+    .cost-panel {
+      border: 1px solid var(--line-color);
+      border-radius: 18px;
+      background: var(--surface-color);
+    }
+
+    .summary-card {
+      padding: 18px;
+    }
+
+    .summary-card .summary-value {
+      margin-top: 8px;
+      font-size: 18px;
+      line-height: 1.5;
+      font-weight: 700;
+      color: var(--secondary-color);
+    }
+
+    .cost-panel {
+      overflow: hidden;
+    }
+
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 1px solid #e9eef5;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--muted-color);
+    }
+
+    .cost-row:last-child {
+      border-bottom: 0;
+    }
+
+    .cost-row strong {
+      color: var(--secondary-color);
+    }
+
+    .summary-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      padding: 22px 24px;
+    }
+
+    .summary-panel.dark {
+      background: linear-gradient(180deg, var(--secondary-color), #0b1a35);
+      border-color: transparent;
+      color: #ffffff;
+    }
+
+    .summary-panel.dark .summary-label,
+    .summary-panel.dark p {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .summary-panel.tinted {
+      background: var(--primary-tint);
+      border-color: rgba(53, 111, 255, 0.18);
+    }
+
+    .summary-big {
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: inherit;
+    }
+
+    .summary-note {
+      margin: 6px 0 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted-color);
+    }
+
+    .restart-row {
+      margin-top: 26px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .restart-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--muted-color);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.28s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .app-sidebar {
+        padding: 18px;
+      }
+
+      .step-list {
+        flex-direction: row;
+        gap: 14px;
+        overflow-x: auto;
+        margin-top: 24px;
+        padding-bottom: 4px;
+      }
+
+      .step-item,
+      .step-item:last-child {
+        min-width: 220px;
+        min-height: auto;
+      }
+
+      .step-item::after {
+        display: none;
+      }
+
+      .app-main {
+        padding: 0;
+      }
+
+      .content-section {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .app-body {
+        padding: 12px;
+      }
+
+      .page-header {
+        margin-bottom: 14px;
+      }
+
+      .embed-shell {
+        padding: 14px;
+        border-radius: 24px;
+      }
+
+      .section-topbar,
+      .section-layout,
+      .form-grid,
+      .summary-grid,
+      .option-grid,
+      .action-row,
+      .quote-actions,
+      .summary-panel {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .back-button,
+      .ghost-button,
+      .primary-button {
+        width: 100%;
+      }
+
+      .summary-panel {
+        align-items: flex-start;
+      }
+    }
+ </style>
+ </head>
+ <body class="app-body">
+  <div class="page-wrap">
+   <header class="page-header">
+    <p id="page-step" class="page-step">Step 1/4</p>
+    <h1 id="main-title" class="page-title">Dati immobile</h1>
+    <p id="subtitle" class="page-subtitle">Inserisci le informazioni principali per ottenere un preventivo accurato.</p>
+   </header>
+
+   <div class="embed-shell">
+    <div class="app-layout">
+     <aside class="app-sidebar">
+      <div class="step-list">
+       <div id="step-1" class="step-item is-active">
+        <div class="step-node">1</div>
+        <div class="step-copy">
+         <span class="step-title">Immobile</span>
+         <span class="step-label">Raccogli i dati essenziali dell'immobile e del canone.</span>
+        </div>
+       </div>
+       <div id="step-2" class="step-item is-upcoming">
+        <div class="step-node">2</div>
+        <div class="step-copy">
+         <span class="step-title">Piano</span>
+         <span class="step-label">Scegli il livello di servizio più adatto alla gestione.</span>
+        </div>
+       </div>
+       <div id="step-3" class="step-item is-upcoming">
+        <div class="step-node">3</div>
+        <div class="step-copy">
+         <span class="step-title">Pagamento</span>
+         <span class="step-label">Definisci la modalità con cui vuoi attivare il servizio.</span>
+        </div>
+       </div>
+       <div id="step-4" class="step-item is-upcoming">
+        <div class="step-node">4</div>
+        <div class="step-copy">
+         <span class="step-title">Preventivo</span>
+         <span class="step-label">Rivedi il riepilogo economico e il totale finale.</span>
+        </div>
+       </div>
+      </div>
+     </aside>
+
+     <main class="app-main">
+      <section id="section-1" class="content-section fade-in" data-step="Step 1/4" data-title="Dati immobile" data-subtitle="Inserisci le informazioni principali per ottenere un preventivo accurato.">
+      <div class="section-topbar">
+       <button type="button" class="back-button is-hidden" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="m15 18-6-6 6-6"></path>
+        </svg>
+        Indietro
+       </button>
+       <div class="topbar-badge">
+        <span class="badge-dot"></span>
+        Preventivatore Domeo
+       </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="section-layout">
+       <div>
+        <div class="form-grid">
+         <div class="field full">
+          <label for="property-type">Tipologia immobile</label>
+          <select id="property-type">
+           <option value="">Seleziona tipologia...</option>
+           <option value="monolocale">Monolocale</option>
+           <option value="bilocale">Bilocale</option>
+           <option value="trilocale">Trilocale</option>
+           <option value="quadrilocale">Quadrilocale</option>
+           <option value="altro">Altro</option>
+          </select>
+         </div>
+
+         <div class="field">
+          <label for="rent">Canone mensile</label>
+          <div class="input-prefix">
+           <span>€</span>
+           <input type="number" id="rent" placeholder="es. 1.200">
+          </div>
+         </div>
+
+         <div class="field">
+          <label for="condo-fees">Spese condominiali mensili</label>
+          <div class="input-prefix">
+           <span>€</span>
+           <input type="number" id="condo-fees" placeholder="es. 150">
+          </div>
+         </div>
+
+         <div class="field full">
+          <label for="address">Indirizzo immobile</label>
+          <input type="text" id="address" placeholder="Via Roma 15, Milano">
+         </div>
+        </div>
+
+        <div class="action-row">
+         <button type="button" id="btn-step1" class="primary-button">
+          <span id="cta-calculate">Calcola Preventivo</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="M5 12h14"></path>
+           <path d="m13 6 6 6-6 6"></path>
+          </svg>
+         </button>
+        </div>
+       </div>
+      </div>
+      </section>
+
+      <section id="section-2" class="content-section hidden" data-step="Step 2/4" data-title="Seleziona il piano" data-subtitle="Scegli il livello di gestione più adatto al tuo immobile.">
+      <div class="section-topbar">
+       <button type="button" id="btn-back-2" class="back-button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="m15 18-6-6 6-6"></path>
+        </svg>
+        Indietro
+       </button>
+       <div class="topbar-badge">
+        <span class="badge-dot"></span>
+        Configurazione servizio
+       </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="section-layout">
+       <div>
+        <div class="option-grid">
+         <div id="plan-start" class="option-card plan-card">
+          <div id="check-start" class="option-check hidden">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="m5 13 4 4L19 7"></path>
+           </svg>
+          </div>
+          <span class="option-badge">Essenziale</span>
+          <h3 id="plan-start-name" class="option-title">START</h3>
+          <p class="option-subtitle">Gestione operativa completa senza gestione dei pagamenti.</p>
+          <ul class="option-list">
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Gestione operativa e relazione con l'inquilino
+           </li>
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Coordinamento manutenzioni e richieste
+           </li>
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Reportistica periodica dedicata
+           </li>
+          </ul>
+          <div class="option-footer">Senza gestione incassi</div>
+         </div>
+
+         <div id="plan-full" class="option-card plan-card">
+          <div id="check-full" class="option-check hidden">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="m5 13 4 4L19 7"></path>
+           </svg>
+          </div>
+          <span class="option-badge">Consigliato</span>
+          <h3 id="plan-full-name" class="option-title">FULL</h3>
+          <p class="option-subtitle">Soluzione completa con gestione pagamenti, controllo incassi e solleciti.</p>
+          <ul class="option-list">
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Include tutte le attività del piano Start
+           </li>
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Gestione pagamenti e controllo incassi
+           </li>
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Solleciti automatici e rendicontazione completa
+           </li>
+          </ul>
+          <div class="option-footer">Zero pensieri, pensiamo a tutto noi</div>
+         </div>
+        </div>
+
+        <div class="action-row">
+         <button type="button" id="btn-step2" class="primary-button">
+          Continua
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="M5 12h14"></path>
+           <path d="m13 6 6 6-6 6"></path>
+          </svg>
+         </button>
+        </div>
+       </div>
+      </div>
+      </section>
+
+      <section id="section-3" class="content-section hidden" data-step="Step 3/4" data-title="Modalita di pagamento" data-subtitle="Definisci come vuoi attivare e distribuire il costo del servizio.">
+      <div class="section-topbar">
+       <button type="button" id="btn-back-3" class="back-button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="m15 18-6-6 6-6"></path>
+        </svg>
+        Indietro
+       </button>
+       <div class="topbar-badge">
+        <span class="badge-dot"></span>
+        Attivazione servizio
+       </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="section-layout">
+       <div>
+        <div class="option-grid">
+         <div id="payment-annual" class="option-card plan-card">
+          <div id="check-annual" class="option-check hidden">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="m5 13 4 4L19 7"></path>
+           </svg>
+          </div>
+          <span class="option-badge">Annuale</span>
+          <h3 class="option-title">Soluzione Unica</h3>
+          <p class="option-subtitle">Pagamento annuale anticipato con visione completa dei costi del servizio.</p>
+          <ul class="option-list">
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Nessun rinnovo mensile da gestire
+           </li>
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Visione annuale immediata del servizio
+           </li>
+          </ul>
+          <div class="option-footer">Totale annuale anticipato</div>
+         </div>
+
+         <div id="payment-monthly" class="option-card plan-card">
+          <div id="check-monthly" class="option-check hidden">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="m5 13 4 4L19 7"></path>
+           </svg>
+          </div>
+          <span class="option-badge">Mensile</span>
+          <h3 class="option-title">Soluzione Mensilizzata</h3>
+          <p class="option-subtitle">Addebito mese per mese, con maggiore flessibilità sulla gestione dei pagamenti.</p>
+          <ul class="option-list">
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Importo ripartito nel tempo
+           </li>
+           <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="m5 13 4 4L19 7"></path>
+            </svg>
+            Più flessibilità in attivazione
+           </li>
+          </ul>
+          <div class="option-footer">Addebito ricorrente mensile</div>
+         </div>
+        </div>
+
+        <div class="action-row">
+         <button type="button" id="btn-step3" class="primary-button" disabled>
+          Vedi Preventivo
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="M5 12h14"></path>
+           <path d="m13 6 6 6-6 6"></path>
+          </svg>
+         </button>
+        </div>
+       </div>
+      </div>
+      </section>
+
+      <section id="section-4" class="content-section hidden" data-step="Step 4/4" data-title="Riepilogo preventivo" data-subtitle="Controlla il dettaglio economico finale prima di procedere.">
+      <div class="section-topbar">
+       <button type="button" id="btn-back-4" class="back-button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="m15 18-6-6 6-6"></path>
+        </svg>
+        Indietro
+       </button>
+       <div class="topbar-badge">
+        <span class="badge-dot"></span>
+        Preventivo pronto
+       </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="section-layout">
+       <div class="summary-block">
+        <div class="summary-grid">
+         <div class="summary-card">
+          <div class="summary-label">Piano selezionato</div>
+          <div id="summary-plan" class="summary-value">FULL</div>
+         </div>
+         <div class="summary-card">
+          <div class="summary-label">Modalità</div>
+          <div id="summary-payment" class="summary-value">Annuale</div>
+         </div>
+         <div class="summary-card">
+          <div class="summary-label">Tipologia immobile</div>
+          <div id="summary-type" class="summary-value">-</div>
+         </div>
+         <div class="summary-card">
+          <div class="summary-label">Indirizzo</div>
+          <div id="summary-address" class="summary-value">-</div>
+         </div>
+         <div class="summary-card">
+          <div class="summary-label">Canone mensile</div>
+          <div id="summary-rent" class="summary-value">-</div>
+         </div>
+         <div class="summary-card">
+          <div class="summary-label">Spese condominiali</div>
+          <div id="summary-condo" class="summary-value">-</div>
+         </div>
+        </div>
+
+        <div class="cost-panel">
+         <div class="cost-row">
+          <span>Commissione Domeo (5%)</span>
+          <strong id="fee-domeo">€0,00</strong>
+         </div>
+         <div id="fee-payment-row" class="cost-row">
+          <span>Gestione pagamenti (+€10/mese)</span>
+          <strong id="fee-payment">€10,00</strong>
+         </div>
+         <div class="cost-row">
+          <span>Costo mensile servizio</span>
+          <strong id="cost-monthly">€0,00</strong>
+         </div>
+         <div class="cost-row">
+          <span>Costo annuale servizio</span>
+          <strong id="cost-annual">€0,00</strong>
+         </div>
+        </div>
+
+        <div class="summary-panel dark">
+         <div>
+          <div class="summary-label">Netto stimato per il proprietario</div>
+          <p class="summary-note">(Canone mensile meno commissione Domeo)</p>
+         </div>
+         <div class="summary-big" id="net-monthly">€0,00</div>
+        </div>
+
+        <div class="summary-panel tinted">
+         <div>
+          <div class="summary-label">Totale da pagare</div>
+          <p id="payment-note" class="summary-note">Pagamento annuale anticipato</p>
+         </div>
+         <div class="summary-big" id="total-amount">€0,00</div>
+        </div>
+
+        <div class="quote-actions">
+         <button type="button" class="ghost-button">Parla con un consulente</button>
+         <button type="button" class="primary-button">Richiedi attivazione</button>
+        </div>
+
+        <div class="restart-row">
+         <button type="button" id="btn-restart" class="restart-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="M3 12a9 9 0 1 0 3-6.708"></path>
+           <path d="M3 4v5h5"></path>
+          </svg>
+          Calcola nuovo preventivo
+         </button>
+        </div>
+       </div>
+      </div>
+      </section>
+     </main>
+    </div>
+   </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let selectedPlan = "full";
+    let selectedPayment = null;
+    let propertyData = {};
+    let currentConfig = {};
+
+    const defaultConfig = {
+      main_title: "Dati immobile",
+      subtitle: "Inserisci le informazioni principali per ottenere un preventivo accurato.",
+      cta_calculate: "Calcola Preventivo",
+      plan_start_name: "START",
+      plan_full_name: "FULL",
+      background_color: "#eceeef",
+      surface_color: "#ffffff",
+      text_color: "#122440",
+      primary_action_color: "#356fff",
+      secondary_action_color: "#122440"
+    };
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          currentConfig = { ...defaultConfig, ...config };
+
+          const mainTitle = document.getElementById("main-title");
+          if (mainTitle && currentStep === 1) mainTitle.textContent = currentConfig.main_title;
+
+          const subtitle = document.getElementById("subtitle");
+          if (subtitle && currentStep === 1) subtitle.textContent = currentConfig.subtitle;
+
+          const ctaCalculate = document.getElementById("cta-calculate");
+          if (ctaCalculate) ctaCalculate.textContent = currentConfig.cta_calculate;
+
+          const planStartName = document.getElementById("plan-start-name");
+          if (planStartName) planStartName.textContent = currentConfig.plan_start_name;
+
+          const planFullName = document.getElementById("plan-full-name");
+          if (planFullName) planFullName.textContent = currentConfig.plan_full_name;
+
+          document.documentElement.style.setProperty("--bg-color", currentConfig.background_color);
+          document.documentElement.style.setProperty("--surface-color", currentConfig.surface_color);
+          document.documentElement.style.setProperty("--text-color", currentConfig.text_color);
+          document.documentElement.style.setProperty("--primary-color", currentConfig.primary_action_color);
+          document.documentElement.style.setProperty("--secondary-color", currentConfig.secondary_action_color);
+          updatePageHeader();
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => window.elementSdk.setConfig({ background_color: value })
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => window.elementSdk.setConfig({ surface_color: value })
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => window.elementSdk.setConfig({ text_color: value })
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => window.elementSdk.setConfig({ primary_action_color: value })
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => window.elementSdk.setConfig({ secondary_action_color: value })
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["main_title", config.main_title || defaultConfig.main_title],
+          ["subtitle", config.subtitle || defaultConfig.subtitle],
+          ["cta_calculate", config.cta_calculate || defaultConfig.cta_calculate],
+          ["plan_start_name", config.plan_start_name || defaultConfig.plan_start_name],
+          ["plan_full_name", config.plan_full_name || defaultConfig.plan_full_name]
+        ])
+      });
+    }
+
+    const sections = {
+      1: document.getElementById("section-1"),
+      2: document.getElementById("section-2"),
+      3: document.getElementById("section-3"),
+      4: document.getElementById("section-4")
+    };
+
+    const progressSteps = {
+      1: document.getElementById("step-1"),
+      2: document.getElementById("step-2"),
+      3: document.getElementById("step-3"),
+      4: document.getElementById("step-4")
+    };
+
+    currentConfig = { ...defaultConfig };
+
+    const checkIcon = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <path d="m5 13 4 4L19 7"></path>
+      </svg>
+    `;
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat("it-IT", {
+        style: "currency",
+        currency: "EUR"
+      }).format(amount);
+    }
+
+    function updatePageHeader() {
+      const activeSection = sections[currentStep];
+      if (!activeSection) return;
+
+      const pageStep = document.getElementById("page-step");
+      const mainTitle = document.getElementById("main-title");
+      const subtitle = document.getElementById("subtitle");
+
+      if (pageStep) pageStep.textContent = activeSection.dataset.step || `Step ${currentStep}/4`;
+
+      if (currentStep === 1) {
+        if (mainTitle) mainTitle.textContent = currentConfig.main_title;
+        if (subtitle) subtitle.textContent = currentConfig.subtitle;
+        return;
+      }
+
+      if (mainTitle) mainTitle.textContent = activeSection.dataset.title || "";
+      if (subtitle) subtitle.textContent = activeSection.dataset.subtitle || "";
+    }
+
+    function updateProgress() {
+      Object.entries(progressSteps).forEach(([stepKey, stepEl]) => {
+        const stepNumber = Number(stepKey);
+        const node = stepEl.querySelector(".step-node");
+
+        stepEl.classList.remove("is-complete", "is-active", "is-upcoming");
+
+        if (stepNumber < currentStep) {
+          stepEl.classList.add("is-complete");
+          node.innerHTML = checkIcon;
+          return;
+        }
+
+        if (stepNumber === currentStep) {
+          stepEl.classList.add("is-active");
+          node.textContent = stepNumber;
+          return;
+        }
+
+        stepEl.classList.add("is-upcoming");
+        node.textContent = stepNumber;
+      });
+    }
+
+    function showSection(step) {
+      Object.values(sections).forEach((section) => {
+        section.classList.add("hidden");
+        section.classList.remove("fade-in");
+      });
+
+      const section = sections[step];
+      section.classList.remove("hidden");
+      void section.offsetWidth;
+      section.classList.add("fade-in");
+
+      currentStep = step;
+      updatePageHeader();
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function validateStep1() {
+      const type = document.getElementById("property-type").value;
+      const rent = document.getElementById("rent").value;
+      const condo = document.getElementById("condo-fees").value;
+      const address = document.getElementById("address").value.trim();
+
+      if (!type || !rent || !address) {
+        showToast("Per favore compila tutti i campi obbligatori", "error");
+        return false;
+      }
+
+      propertyData = {
+        type: document.getElementById("property-type").options[document.getElementById("property-type").selectedIndex].text,
+        rent: parseFloat(rent),
+        condo: parseFloat(condo) || 0,
+        address
+      };
+
+      return true;
+    }
+
+    function showToast(message, type = "info") {
+      const existing = document.querySelector(".toast-message");
+      if (existing) existing.remove();
+
+      const toast = document.createElement("div");
+      toast.className = "toast-message";
+      toast.textContent = message;
+      toast.style.position = "fixed";
+      toast.style.left = "50%";
+      toast.style.bottom = "20px";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.padding = "14px 18px";
+      toast.style.borderRadius = "12px";
+      toast.style.background = type === "error" ? "#b42318" : "var(--secondary-color)";
+      toast.style.color = "#ffffff";
+      toast.style.boxShadow = "0 16px 32px rgba(18, 36, 64, 0.18)";
+      toast.style.zIndex = "50";
+      toast.style.fontSize = "14px";
+      toast.style.fontWeight = "600";
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function selectPlan(plan) {
+      selectedPlan = plan;
+
+      const planStart = document.getElementById("plan-start");
+      const planFull = document.getElementById("plan-full");
+      const checkStart = document.getElementById("check-start");
+      const checkFull = document.getElementById("check-full");
+
+      planStart.classList.toggle("selected", plan === "start");
+      planFull.classList.toggle("selected", plan === "full");
+      checkStart.classList.toggle("hidden", plan !== "start");
+      checkFull.classList.toggle("hidden", plan !== "full");
+    }
+
+    function selectPayment(payment) {
+      selectedPayment = payment;
+
+      const paymentAnnual = document.getElementById("payment-annual");
+      const paymentMonthly = document.getElementById("payment-monthly");
+      const checkAnnual = document.getElementById("check-annual");
+      const checkMonthly = document.getElementById("check-monthly");
+      const btnStep3 = document.getElementById("btn-step3");
+
+      paymentAnnual.classList.toggle("selected", payment === "annual");
+      paymentMonthly.classList.toggle("selected", payment === "monthly");
+      checkAnnual.classList.toggle("hidden", payment !== "annual");
+      checkMonthly.classList.toggle("hidden", payment !== "monthly");
+      btnStep3.disabled = false;
+    }
+
+    function calculateQuote() {
+      const rent = propertyData.rent;
+      const commissionRate = 0.05;
+      const paymentFee = selectedPlan === "full" ? 10 : 0;
+
+      const domeoFee = rent * commissionRate;
+      const monthlyTotal = domeoFee + paymentFee;
+      const annualTotal = monthlyTotal * 12;
+      const netMonthly = rent - domeoFee;
+
+      document.getElementById("summary-plan").textContent = selectedPlan === "full" ? "FULL" : "START";
+      document.getElementById("summary-payment").textContent = selectedPayment === "annual" ? "Annuale" : "Mensile";
+      document.getElementById("summary-type").textContent = propertyData.type;
+      document.getElementById("summary-address").textContent = propertyData.address;
+      document.getElementById("summary-rent").textContent = formatCurrency(rent);
+      document.getElementById("summary-condo").textContent = formatCurrency(propertyData.condo);
+      document.getElementById("fee-domeo").textContent = formatCurrency(domeoFee);
+
+      const feePaymentRow = document.getElementById("fee-payment-row");
+      if (selectedPlan === "full") {
+        feePaymentRow.classList.remove("hidden");
+        document.getElementById("fee-payment").textContent = formatCurrency(paymentFee);
+      } else {
+        feePaymentRow.classList.add("hidden");
+      }
+
+      document.getElementById("cost-monthly").textContent = formatCurrency(monthlyTotal);
+      document.getElementById("cost-annual").textContent = formatCurrency(annualTotal);
+      document.getElementById("net-monthly").textContent = formatCurrency(netMonthly);
+
+      const totalAmount = selectedPayment === "annual" ? annualTotal : monthlyTotal;
+      document.getElementById("total-amount").textContent = formatCurrency(totalAmount);
+      document.getElementById("payment-note").textContent = selectedPayment === "annual"
+        ? "Pagamento annuale anticipato"
+        : "Addebito mensile";
+    }
+
+    document.getElementById("btn-step1").addEventListener("click", () => {
+      if (validateStep1()) showSection(2);
+    });
+
+    document.getElementById("plan-start").addEventListener("click", () => selectPlan("start"));
+    document.getElementById("plan-full").addEventListener("click", () => selectPlan("full"));
+    document.getElementById("btn-step2").addEventListener("click", () => showSection(3));
+    document.getElementById("btn-back-2").addEventListener("click", () => showSection(1));
+
+    document.getElementById("payment-annual").addEventListener("click", () => selectPayment("annual"));
+    document.getElementById("payment-monthly").addEventListener("click", () => selectPayment("monthly"));
+
+    document.getElementById("btn-step3").addEventListener("click", () => {
+      if (!selectedPayment) {
+        showToast("Seleziona una modalità di pagamento", "error");
+        return;
+      }
+
+      calculateQuote();
+      showSection(4);
+    });
+
+    document.getElementById("btn-back-3").addEventListener("click", () => showSection(2));
+    document.getElementById("btn-back-4").addEventListener("click", () => showSection(3));
+
+    document.getElementById("btn-restart").addEventListener("click", () => {
+      selectedPlan = "full";
+      selectedPayment = null;
+      propertyData = {};
+
+      document.getElementById("property-type").value = "";
+      document.getElementById("rent").value = "";
+      document.getElementById("condo-fees").value = "";
+      document.getElementById("address").value = "";
+
+      selectPlan("full");
+      document.getElementById("payment-annual").classList.remove("selected");
+      document.getElementById("payment-monthly").classList.remove("selected");
+      document.getElementById("check-annual").classList.add("hidden");
+      document.getElementById("check-monthly").classList.add("hidden");
+      document.getElementById("btn-step3").disabled = true;
+
+      showSection(1);
+    });
+
+    selectPlan("full");
+    updatePageHeader();
+    updateProgress();
+  </script>
+ </body>
+</html>
