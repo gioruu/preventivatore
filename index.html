@@ -339,6 +339,14 @@
       gap: 10px;
     }
 
+    .field-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: 58px;
+      gap: 4px;
+    }
+
     .field.full,
     .summary-card.full,
     .summary-block.full {
@@ -350,6 +358,13 @@
       font-size: 15px;
       font-weight: 600;
       color: var(--secondary-color);
+    }
+
+    .field-hint {
+      margin-top: -4px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted-color);
     }
 
     .field input,
@@ -785,7 +800,7 @@
     </div>
     <p id="page-step" class="page-step">Configuratore in 4 passaggi</p>
     <h1 id="main-title" class="page-title">Calcola il tuo preventivo</h1>
-    <p id="subtitle" class="page-subtitle">Completa i passaggi per ottenere un riepilogo chiaro e immediato della gestione del tuo immobile.</p>
+    <p id="subtitle" class="page-subtitle">Completa i passaggi per ottenere un preventivo chiaro e coerente con la tipologia di contratto selezionata.</p>
    </header>
 
    <div class="embed-shell">
@@ -795,8 +810,8 @@
        <div id="step-1" class="step-item is-active">
         <div class="step-node">1</div>
         <div class="step-copy">
-         <span class="step-title">Immobile</span>
-         <span class="step-label">Raccogli i dati essenziali dell'immobile e del canone.</span>
+         <span class="step-title">Contratto</span>
+         <span class="step-label">Inserisci tipologia, durata e importi da proteggere.</span>
         </div>
        </div>
        <div id="step-2" class="step-item is-upcoming">
@@ -824,11 +839,11 @@
      </aside>
 
      <main class="app-main">
-      <section id="section-1" class="content-section fade-in" data-step="Step 1/4" data-title="Dati immobile" data-subtitle="Inserisci le informazioni principali per ottenere un preventivo accurato.">
+      <section id="section-1" class="content-section fade-in" data-step="Step 1/4" data-title="Dati contratto" data-subtitle="Inserisci le informazioni principali per ottenere un preventivo accurato.">
       <div class="section-copy">
        <p class="section-kicker">Step 1</p>
-       <h2 class="section-heading">Dati immobile</h2>
-       <p class="section-text">Inserisci le informazioni essenziali per costruire un preventivo coerente con il profilo dell'immobile.</p>
+       <h2 class="section-heading">Dati contratto</h2>
+       <p class="section-text">Inserisci le informazioni essenziali per costruire un preventivo coerente con il contratto da attivare.</p>
       </div>
       <div class="section-divider"></div>
 
@@ -836,35 +851,46 @@
        <div class="section-body">
         <div class="form-grid">
          <div class="field full">
-          <label for="property-type">Tipologia immobile</label>
-          <select id="property-type">
-           <option value="">Seleziona tipologia...</option>
-           <option value="monolocale">Monolocale</option>
-           <option value="bilocale">Bilocale</option>
-           <option value="trilocale">Trilocale</option>
-           <option value="quadrilocale">Quadrilocale</option>
-           <option value="altro">Altro</option>
+          <div class="field-copy">
+           <label for="property-type">Tipologia contratto</label>
+          </div>
+          <select id="property-type" required>
+           <option value="">Seleziona tipologia contratto...</option>
           </select>
          </div>
 
+         <div id="contract-duration-field" class="field hidden">
+          <div class="field-copy">
+           <label for="contract-duration">Durata contratto</label>
+          </div>
+          <select id="contract-duration"></select>
+         </div>
+
          <div class="field">
-          <label for="rent">Canone mensile</label>
+          <div class="field-copy">
+           <label for="rent">Canone mensile</label>
+          </div>
           <div class="input-prefix">
            <span>€</span>
-           <input type="number" id="rent" placeholder="es. 1.200">
+           <input type="number" id="rent" min="0" placeholder="es. 1.200" required>
           </div>
          </div>
 
          <div class="field">
-          <label for="condo-fees">Spese condominiali mensili</label>
+          <div class="field-copy">
+           <label for="condo-fees">Spese condominiali mensili</label>
+           <div class="field-hint">Importo mensile da sommare al canone.</div>
+          </div>
           <div class="input-prefix">
            <span>€</span>
-           <input type="number" id="condo-fees" placeholder="es. 150">
+           <input type="number" id="condo-fees" min="0" placeholder="es. 150">
           </div>
          </div>
 
          <div class="field full">
-          <label for="address">Indirizzo immobile</label>
+          <div class="field-copy">
+           <label for="address">Indirizzo immobile</label>
+          </div>
           <input type="text" id="address" placeholder="Via Roma 15, Milano">
          </div>
         </div>
@@ -882,11 +908,11 @@
       </div>
       </section>
 
-      <section id="section-2" class="content-section hidden" data-step="Step 2/4" data-title="Seleziona il piano" data-subtitle="Scegli il livello di gestione più adatto al tuo immobile.">
+      <section id="section-2" class="content-section hidden" data-step="Step 2/4" data-title="Seleziona il piano" data-subtitle="Scegli il livello di gestione più adatto al contratto selezionato.">
       <div class="section-copy">
        <p class="section-kicker">Step 2</p>
        <h2 class="section-heading">Seleziona il piano</h2>
-       <p class="section-text">Confronta le opzioni disponibili e scegli il livello di gestione più adatto al servizio che vuoi attivare.</p>
+       <p class="section-text">Confronta le opzioni disponibili e scegli il livello di protezione più adatto al contratto che vuoi attivare.</p>
       </div>
       <div class="section-divider"></div>
 
@@ -977,41 +1003,41 @@
       </div>
       </section>
 
-      <section id="section-3" class="content-section hidden" data-step="Step 3/4" data-title="Frequenza di addebito" data-subtitle="Scegli come distribuire nel tempo il costo del servizio.">
+      <section id="section-3" class="content-section hidden" data-step="Step 3/4" data-title="Modalità di attivazione" data-subtitle="Scegli la formula economica con cui attivare il servizio.">
       <div class="section-copy">
        <p class="section-kicker">Step 3</p>
-       <h2 class="section-heading">Frequenza di addebito</h2>
-       <p class="section-text">Scegli se preferisci un addebito annuale o mensile per visualizzare il riepilogo finale nel formato corretto.</p>
+       <h2 class="section-heading">Modalità di attivazione</h2>
+       <p class="section-text">Confronta soluzione unica e soluzione mensilizzata in base al costo complessivo sulla durata del contratto.</p>
       </div>
       <div class="section-divider"></div>
 
       <div class="section-layout">
        <div class="section-body">
         <div class="option-grid">
-         <div id="payment-annual" class="option-card plan-card">
-          <div id="check-annual" class="option-check hidden">
+         <div id="payment-single" class="option-card plan-card">
+          <div id="check-single" class="option-check hidden">
            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <path d="m5 13 4 4L19 7"></path>
            </svg>
           </div>
-          <span class="option-badge">Annuale</span>
+          <span class="option-badge">Una tantum</span>
           <h3 class="option-title">Soluzione Unica</h3>
-          <p class="option-subtitle">Pagamento annuale anticipato con visione completa dei costi del servizio.</p>
+          <p class="option-subtitle">Una mensilità dell'importo da proteggere, minimo €450. Per FULL si aggiungono €10/mese sulla durata del contratto.</p>
           <ul class="option-list">
            <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
              <path d="m5 13 4 4L19 7"></path>
             </svg>
-            Nessun rinnovo mensile da gestire
+            Per START il costo resta interamente una tantum
            </li>
            <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
              <path d="m5 13 4 4L19 7"></path>
             </svg>
-            Visione annuale immediata del servizio
+            Per FULL include €10/mese per tutta la durata del contratto
            </li>
           </ul>
-          <div class="option-footer">Totale annuale anticipato</div>
+          <div class="option-footer">Costo complessivo basato sulla durata del contratto</div>
          </div>
 
          <div id="payment-monthly" class="option-card plan-card">
@@ -1020,24 +1046,24 @@
             <path d="m5 13 4 4L19 7"></path>
            </svg>
           </div>
-          <span class="option-badge">Mensile</span>
+          <span class="option-badge">Ricorrente</span>
           <h3 class="option-title">Soluzione Mensilizzata</h3>
-          <p class="option-subtitle">Addebito mese per mese, con maggiore flessibilità sulla gestione dei pagamenti.</p>
+          <p class="option-subtitle">5% al mese dell'importo da proteggere, minimo €29/mese. La formula è identica per START e FULL.</p>
           <ul class="option-list">
            <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
              <path d="m5 13 4 4L19 7"></path>
             </svg>
-            Importo ripartito nel tempo
+            Addebito distribuito mese per mese
            </li>
            <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
              <path d="m5 13 4 4L19 7"></path>
             </svg>
-            Più flessibilità in attivazione
+            Convenienza da valutare sulla durata totale del contratto
            </li>
           </ul>
-          <div class="option-footer">Addebito ricorrente mensile</div>
+          <div class="option-footer">Totale calcolato sui mesi del contratto</div>
          </div>
         </div>
 
@@ -1076,12 +1102,16 @@
           <div id="summary-plan" class="summary-value">FULL</div>
          </div>
          <div class="summary-card">
-          <div class="summary-label">Modalità</div>
-          <div id="summary-payment" class="summary-value">Annuale</div>
+          <div class="summary-label">Soluzione selezionata</div>
+          <div id="summary-payment" class="summary-value">Soluzione Unica</div>
          </div>
          <div class="summary-card">
-          <div class="summary-label">Tipologia immobile</div>
+          <div class="summary-label">Tipologia contratto</div>
           <div id="summary-type" class="summary-value">-</div>
+         </div>
+         <div class="summary-card">
+          <div class="summary-label">Durata contratto</div>
+          <div id="summary-duration" class="summary-value">-</div>
          </div>
          <div class="summary-card">
           <div class="summary-label">Indirizzo</div>
@@ -1092,42 +1122,43 @@
           <div id="summary-rent" class="summary-value">-</div>
          </div>
          <div class="summary-card">
-          <div class="summary-label">Spese condominiali</div>
+          <div class="summary-label">Spese condominiali mensili</div>
           <div id="summary-condo" class="summary-value">-</div>
          </div>
         </div>
 
         <div class="cost-panel">
          <div class="cost-row">
-          <span>Commissione Domeo (5%)</span>
-          <strong id="fee-domeo">€0,00</strong>
-         </div>
-         <div id="fee-payment-row" class="cost-row">
-          <span>Gestione pagamenti (+€10/mese)</span>
-          <strong id="fee-payment">€10,00</strong>
+          <span>Importo da proteggere</span>
+          <strong id="protected-amount">€0,00</strong>
          </div>
          <div class="cost-row">
-          <span>Costo mensile servizio</span>
-          <strong id="cost-monthly">€0,00</strong>
+          <span>Costo attivazione</span>
+          <strong id="activation-fee">€0,00</strong>
          </div>
          <div class="cost-row">
-          <span>Costo annuale servizio</span>
-          <strong id="cost-annual">€0,00</strong>
+          <span>Canone servizio mensile</span>
+          <strong id="service-fee-monthly">€0,00</strong>
+         </div>
+         <div class="cost-row">
+          <span>Totale su durata contratto</span>
+          <strong id="contract-total">€0,00</strong>
          </div>
         </div>
+        <p id="vat-note" class="summary-note hidden">Per questa tipologia gli importi sono da intendersi oltre IVA.</p>
 
         <div class="summary-panel dark">
          <div>
-          <div class="summary-label">Netto stimato per il proprietario</div>
-          <p class="summary-note">(Canone mensile meno commissione Domeo)</p>
+          <div class="summary-label">Soluzione più conveniente</div>
+          <p id="recommendation-note" class="summary-note">Confronto automatico sulla durata del contratto.</p>
          </div>
-         <div class="summary-big" id="net-monthly">€0,00</div>
+         <div class="summary-big" id="recommended-payment">-</div>
         </div>
 
         <div class="summary-panel tinted">
          <div>
-          <div class="summary-label">Totale da pagare</div>
-          <p id="payment-note" class="summary-note">Pagamento annuale anticipato</p>
+          <div class="summary-label">Costo complessivo selezionato</div>
+          <p id="payment-note" class="summary-note">Costo stimato sull'intera durata del contratto</p>
          </div>
          <div class="summary-big" id="total-amount">€0,00</div>
         </div>
@@ -1160,6 +1191,7 @@
    </div>
   </div>
 
+  <script src="./quote-logic.js"></script>
   <script>
     let currentStep = 1;
     let selectedPlan = "full";
@@ -1169,7 +1201,7 @@
 
     const defaultConfig = {
       main_title: "Calcola il tuo preventivo",
-      subtitle: "Completa i passaggi per ottenere un riepilogo chiaro e immediato della gestione del tuo immobile.",
+      subtitle: "Completa i passaggi per ottenere un preventivo chiaro e coerente con la tipologia di contratto selezionata.",
       cta_calculate: "Calcola Preventivo",
       plan_start_name: "START",
       plan_full_name: "FULL",
@@ -1261,6 +1293,13 @@
 
     currentConfig = { ...defaultConfig };
 
+    const {
+      CONTRACT_TYPES,
+      calculateQuote: calculateQuoteData,
+      getContractType,
+      resolveDuration
+    } = window.quoteLogic;
+
     const checkIcon = `
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
         <path d="m5 13 4 4L19 7"></path>
@@ -1272,6 +1311,18 @@
         style: "currency",
         currency: "EUR"
       }).format(amount);
+    }
+
+    function formatDuration(duration) {
+      return `${duration} mesi`;
+    }
+
+    function getPlanLabel(plan) {
+      return plan === "full" ? currentConfig.plan_full_name : currentConfig.plan_start_name;
+    }
+
+    function getPaymentLabel(payment) {
+      return payment === "single" ? "Soluzione Unica" : "Soluzione Mensilizzata";
     }
 
     function updatePageHeader() {
@@ -1325,27 +1376,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function validateStep1() {
-      const type = document.getElementById("property-type").value;
-      const rent = document.getElementById("rent").value;
-      const condo = document.getElementById("condo-fees").value;
-      const address = document.getElementById("address").value.trim();
-
-      if (!type || !rent || !address) {
-        showToast("Per favore compila tutti i campi obbligatori", "error");
-        return false;
-      }
-
-      propertyData = {
-        type: document.getElementById("property-type").options[document.getElementById("property-type").selectedIndex].text,
-        rent: parseFloat(rent),
-        condo: parseFloat(condo) || 0,
-        address
-      };
-
-      return true;
-    }
-
     function showToast(message, type = "info") {
       const existing = document.querySelector(".toast-message");
       if (existing) existing.remove();
@@ -1370,6 +1400,58 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
+    function populateContractTypes() {
+      const propertyType = document.getElementById("property-type");
+
+      propertyType.insertAdjacentHTML(
+        "beforeend",
+        CONTRACT_TYPES.map(({ value, label }) => `<option value="${value}">${label}</option>`).join("")
+      );
+    }
+
+    function syncDurationField() {
+      const contractType = getContractType(document.getElementById("property-type").value);
+      const durationField = document.getElementById("contract-duration-field");
+      const durationSelect = document.getElementById("contract-duration");
+
+      if (!contractType || !contractType.durationOptions) {
+        durationField.classList.add("hidden");
+        durationSelect.innerHTML = "";
+        return;
+      }
+
+      const currentDuration = resolveDuration(contractType, durationSelect.value);
+      durationSelect.innerHTML = contractType.durationOptions
+        .map((duration) => `<option value="${duration}">${formatDuration(duration)}</option>`)
+        .join("");
+      durationSelect.value = String(currentDuration);
+      durationField.classList.remove("hidden");
+    }
+
+    function validateStep1() {
+      const contractTypeValue = document.getElementById("property-type").value;
+      const rent = Number(document.getElementById("rent").value);
+
+      if (!contractTypeValue || rent <= 0) {
+        showToast("Tipologia contratto e canone mensile sono obbligatori", "error");
+        return false;
+      }
+
+      const contractType = getContractType(contractTypeValue);
+      const condoFees = Number(document.getElementById("condo-fees").value) || 0;
+      const address = document.getElementById("address").value.trim();
+
+      propertyData = {
+        contractTypeValue,
+        duration: resolveDuration(contractType, document.getElementById("contract-duration").value),
+        rent,
+        condoFees,
+        address
+      };
+
+      return true;
+    }
+
     function selectPlan(plan) {
       selectedPlan = plan;
 
@@ -1387,55 +1469,84 @@
     function selectPayment(payment) {
       selectedPayment = payment;
 
-      const paymentAnnual = document.getElementById("payment-annual");
+      const paymentSingle = document.getElementById("payment-single");
       const paymentMonthly = document.getElementById("payment-monthly");
-      const checkAnnual = document.getElementById("check-annual");
+      const checkSingle = document.getElementById("check-single");
       const checkMonthly = document.getElementById("check-monthly");
-      const btnStep3 = document.getElementById("btn-step3");
 
-      paymentAnnual.classList.toggle("selected", payment === "annual");
+      paymentSingle.classList.toggle("selected", payment === "single");
       paymentMonthly.classList.toggle("selected", payment === "monthly");
-      checkAnnual.classList.toggle("hidden", payment !== "annual");
+      checkSingle.classList.toggle("hidden", payment !== "single");
       checkMonthly.classList.toggle("hidden", payment !== "monthly");
-      btnStep3.disabled = false;
+      document.getElementById("btn-step3").disabled = false;
+    }
+
+    function buildPaymentNote(quote) {
+      const vatNote = quote.vatExcluded ? " oltre IVA" : "";
+
+      if (selectedPayment === "monthly") {
+        return `${formatCurrency(quote.recurringMonthlyFee)}/mese${vatNote}`;
+      }
+
+      if (selectedPlan === "full") {
+        return `${formatCurrency(quote.activationFee)} una tantum + ${formatCurrency(quote.recurringMonthlyFee)}/mese${vatNote}`;
+      }
+
+      return `${formatCurrency(quote.activationFee)} una tantum${vatNote}`;
+    }
+
+    function updateQuoteSummary(quote) {
+      const recommendationLabel = getPaymentLabel(quote.recommendation.recommendedPayment);
+      const alternativeLabel = getPaymentLabel(quote.recommendation.alternativePayment);
+      const recommendationNote = quote.recommendation.savings === 0
+        ? "Le due formule hanno lo stesso costo complessivo."
+        : `${recommendationLabel} fa risparmiare ${formatCurrency(quote.recommendation.savings)} rispetto a ${alternativeLabel}.`;
+
+      document.getElementById("summary-plan").textContent = getPlanLabel(selectedPlan);
+      document.getElementById("summary-payment").textContent = getPaymentLabel(selectedPayment);
+      document.getElementById("summary-type").textContent = quote.contractType.label;
+      document.getElementById("summary-duration").textContent = formatDuration(quote.duration);
+      document.getElementById("summary-address").textContent = propertyData.address || "Non indicato";
+      document.getElementById("summary-rent").textContent = formatCurrency(quote.rent);
+      document.getElementById("summary-condo").textContent = formatCurrency(quote.condoFees);
+
+      document.getElementById("protected-amount").textContent = formatCurrency(quote.protectedAmount);
+      document.getElementById("activation-fee").textContent = formatCurrency(quote.activationFee);
+      document.getElementById("service-fee-monthly").textContent = formatCurrency(quote.recurringMonthlyFee);
+      document.getElementById("contract-total").textContent = formatCurrency(quote.totalContractCost);
+
+      document.getElementById("recommended-payment").textContent = recommendationLabel;
+      document.getElementById("recommendation-note").textContent = recommendationNote;
+
+      document.getElementById("total-amount").textContent = formatCurrency(quote.totalContractCost);
+      document.getElementById("payment-note").textContent = `${buildPaymentNote(quote)}. Costo complessivo stimato su ${formatDuration(quote.duration).toLowerCase()}.`;
+
+      document.getElementById("vat-note").classList.toggle("hidden", !quote.vatExcluded);
     }
 
     function calculateQuote() {
-      const rent = propertyData.rent;
-      const commissionRate = 0.05;
-      const paymentFee = selectedPlan === "full" ? 10 : 0;
+      const quote = calculateQuoteData({
+        plan: selectedPlan,
+        payment: selectedPayment,
+        contractTypeValue: propertyData.contractTypeValue,
+        duration: propertyData.duration,
+        rent: propertyData.rent,
+        condoFees: propertyData.condoFees
+      });
 
-      const domeoFee = rent * commissionRate;
-      const monthlyTotal = domeoFee + paymentFee;
-      const annualTotal = monthlyTotal * 12;
-      const netMonthly = rent - domeoFee;
-
-      document.getElementById("summary-plan").textContent = selectedPlan === "full" ? "FULL" : "START";
-      document.getElementById("summary-payment").textContent = selectedPayment === "annual" ? "Annuale" : "Mensile";
-      document.getElementById("summary-type").textContent = propertyData.type;
-      document.getElementById("summary-address").textContent = propertyData.address;
-      document.getElementById("summary-rent").textContent = formatCurrency(rent);
-      document.getElementById("summary-condo").textContent = formatCurrency(propertyData.condo);
-      document.getElementById("fee-domeo").textContent = formatCurrency(domeoFee);
-
-      const feePaymentRow = document.getElementById("fee-payment-row");
-      if (selectedPlan === "full") {
-        feePaymentRow.classList.remove("hidden");
-        document.getElementById("fee-payment").textContent = formatCurrency(paymentFee);
-      } else {
-        feePaymentRow.classList.add("hidden");
-      }
-
-      document.getElementById("cost-monthly").textContent = formatCurrency(monthlyTotal);
-      document.getElementById("cost-annual").textContent = formatCurrency(annualTotal);
-      document.getElementById("net-monthly").textContent = formatCurrency(netMonthly);
-
-      const totalAmount = selectedPayment === "annual" ? annualTotal : monthlyTotal;
-      document.getElementById("total-amount").textContent = formatCurrency(totalAmount);
-      document.getElementById("payment-note").textContent = selectedPayment === "annual"
-        ? "Pagamento annuale anticipato"
-        : "Addebito mensile";
+      updateQuoteSummary(quote);
     }
+
+    function resetPaymentSelection() {
+      selectedPayment = null;
+      document.getElementById("payment-single").classList.remove("selected");
+      document.getElementById("payment-monthly").classList.remove("selected");
+      document.getElementById("check-single").classList.add("hidden");
+      document.getElementById("check-monthly").classList.add("hidden");
+      document.getElementById("btn-step3").disabled = true;
+    }
+
+    document.getElementById("property-type").addEventListener("change", syncDurationField);
 
     document.getElementById("btn-step1").addEventListener("click", () => {
       if (validateStep1()) showSection(2);
@@ -1446,12 +1557,12 @@
     document.getElementById("btn-step2").addEventListener("click", () => showSection(3));
     document.getElementById("btn-back-2").addEventListener("click", () => showSection(1));
 
-    document.getElementById("payment-annual").addEventListener("click", () => selectPayment("annual"));
+    document.getElementById("payment-single").addEventListener("click", () => selectPayment("single"));
     document.getElementById("payment-monthly").addEventListener("click", () => selectPayment("monthly"));
 
     document.getElementById("btn-step3").addEventListener("click", () => {
       if (!selectedPayment) {
-        showToast("Seleziona una modalità di pagamento", "error");
+        showToast("Seleziona una modalità di attivazione", "error");
         return;
       }
 
@@ -1464,25 +1575,24 @@
 
     document.getElementById("btn-restart").addEventListener("click", () => {
       selectedPlan = "full";
-      selectedPayment = null;
       propertyData = {};
 
       document.getElementById("property-type").value = "";
+      document.getElementById("contract-duration").innerHTML = "";
+      document.getElementById("contract-duration-field").classList.add("hidden");
       document.getElementById("rent").value = "";
       document.getElementById("condo-fees").value = "";
       document.getElementById("address").value = "";
 
       selectPlan("full");
-      document.getElementById("payment-annual").classList.remove("selected");
-      document.getElementById("payment-monthly").classList.remove("selected");
-      document.getElementById("check-annual").classList.add("hidden");
-      document.getElementById("check-monthly").classList.add("hidden");
-      document.getElementById("btn-step3").disabled = true;
-
+      resetPaymentSelection();
       showSection(1);
     });
 
+    populateContractTypes();
+    syncDurationField();
     selectPlan("full");
+    resetPaymentSelection();
     updatePageHeader();
     updateProgress();
   </script>
