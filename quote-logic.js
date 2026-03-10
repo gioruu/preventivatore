@@ -11,64 +11,102 @@
   const MONTHLY_RATE = 0.05;
   const FULL_SINGLE_MONTHLY_FEE = 10;
 
+  function createMonthlyOptions(start, end) {
+    return Array.from({ length: end - start + 1 }, (_, index) => {
+      const value = start + index;
+
+      return {
+        value,
+        label: `${value} mesi`
+      };
+    });
+  }
+
+  function createYearlyOptions(start, end) {
+    return Array.from({ length: end - start + 1 }, (_, index) => {
+      const years = start + index;
+
+      return {
+        value: years * 12,
+        label: `${years} ${years === 1 ? "anno" : "anni"}`
+      };
+    });
+  }
+
   const CONTRACT_TYPES = [
     {
-      value: "abitativo-transitorio",
-      label: "Abitativo (Transitorio)",
-      durationOptions: [6, 12, 18],
+      value: "transitorio",
+      label: "Transitorio",
+      durationOptions: createMonthlyOptions(6, 18),
       defaultDuration: 12,
       vatExcluded: false
     },
     {
-      value: "abitativo-studenti",
-      label: "Abitativo (Studenti)",
-      durationOptions: [6, 12, 18],
+      value: "studenti",
+      label: "Studenti",
+      durationOptions: createMonthlyOptions(6, 36),
       defaultDuration: 12,
       vatExcluded: false
     },
     {
-      value: "abitativo-4-4",
-      label: "Abitativo (4+4)",
-      duration: 48,
-      vatExcluded: false
-    },
-    {
-      value: "abitativo-concordato-3-2",
-      label: "Abitativo - Concordato (3+2)",
-      duration: 36,
-      vatExcluded: false
-    },
-    {
-      value: "abitativo-concordato-4-2",
-      label: "Abitativo - Concordato (4+2)",
-      duration: 48,
-      vatExcluded: false
-    },
-    {
-      value: "abitativo-concordato-5-2",
-      label: "Abitativo - Concordato (5+2)",
-      duration: 60,
-      vatExcluded: false
-    },
-    {
-      value: "abitativo-concordato-6-2",
-      label: "Abitativo - Concordato (6+2)",
-      duration: 72,
-      vatExcluded: false
-    },
-    {
-      value: "commerciale-6-6",
+      value: "commerciale",
       label: "Commerciale (6+6)",
       duration: 72,
+      durationLabel: "6+6",
       vatExcluded: true
     },
     {
-      value: "non-abitativo-1-1",
-      label: "Non Abitativo (1+1)",
-      duration: 12,
+      value: "non-abitativo",
+      label: "Non abitativo",
+      durationOptions: createYearlyOptions(1, 6),
+      defaultDuration: 12,
       vatExcluded: true
+    },
+    {
+      value: "abitativo",
+      label: "Abitativo (4+4)",
+      duration: 48,
+      durationLabel: "4+4",
+      vatExcluded: false
+    },
+    {
+      value: "abitativo-concordato",
+      label: "Abitativo - Concordato",
+      durationOptions: [
+        { value: 36, label: "3+2" },
+        { value: 48, label: "4+2" },
+        { value: 60, label: "5+2" },
+        { value: 72, label: "6+2" }
+      ],
+      defaultDuration: 36,
+      vatExcluded: false
     }
   ];
+
+  function getDurationOptions(contractType) {
+    if (!contractType || !contractType.durationOptions) return [];
+
+    return contractType.durationOptions.map((option) => (
+      typeof option === "number"
+        ? { value: option, label: `${option} mesi` }
+        : option
+    ));
+  }
+
+  function getDurationLabel(contractTypeValue, duration) {
+    const contractType = typeof contractTypeValue === "string"
+      ? getContractType(contractTypeValue)
+      : contractTypeValue;
+
+    if (!contractType) return "";
+    if (contractType.durationLabel) return contractType.durationLabel;
+
+    const resolvedDuration = resolveDuration(contractType, duration);
+    const selectedOption = getDurationOptions(contractType)
+      .find((option) => option.value === resolvedDuration);
+
+    return selectedOption ? selectedOption.label : `${resolvedDuration} mesi`;
+  }
 
   function roundCurrency(value) {
     return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -86,8 +124,9 @@
     if (!contractType) return 0;
     if (contractType.duration) return contractType.duration;
 
+    const durationOptions = getDurationOptions(contractType);
     const normalizedDuration = Number(duration);
-    return contractType.durationOptions.includes(normalizedDuration)
+    return durationOptions.some((option) => option.value === normalizedDuration)
       ? normalizedDuration
       : contractType.defaultDuration;
   }
@@ -208,6 +247,8 @@
     MONTHLY_RATE,
     calculatePlanCost,
     calculateQuote,
+    getDurationLabel,
+    getDurationOptions,
     getContractType,
     getMonthlyBaseFee,
     getProtectedAmount,

@@ -4,32 +4,36 @@ const assert = require("node:assert/strict");
 const {
   CONTRACT_TYPES,
   calculateQuote,
+  getDurationLabel,
+  getDurationOptions,
   getRecommendation,
   resolveDuration
 } = require("./quote-logic.js");
+const {
+  DEFAULT_DEV_FORM_VALUES,
+  getDevelopmentBootstrap,
+  normalizeInitialStep
+} = require("./form-dev-utils.js");
 
 test("exposes the contract types derived from the pricing sheet", () => {
   assert.deepEqual(
     CONTRACT_TYPES.map(({ label }) => label),
     [
-      "Abitativo (Transitorio)",
-      "Abitativo (Studenti)",
-      "Abitativo (4+4)",
-      "Abitativo - Concordato (3+2)",
-      "Abitativo - Concordato (4+2)",
-      "Abitativo - Concordato (5+2)",
-      "Abitativo - Concordato (6+2)",
+      "Transitorio",
+      "Studenti",
       "Commerciale (6+6)",
-      "Non Abitativo (1+1)"
+      "Non abitativo",
+      "Abitativo (4+4)",
+      "Abitativo - Concordato"
     ]
   );
 });
 
-test("uses the selected duration for transitorio contracts", () => {
+test("supports month-by-month durations for transitorio contracts", () => {
   const quote = calculateQuote({
     plan: "start",
     payment: "monthly",
-    contractTypeValue: "abitativo-transitorio",
+    contractTypeValue: "transitorio",
     duration: 18,
     rent: 900,
     condoFees: 45
@@ -42,15 +46,23 @@ test("uses the selected duration for transitorio contracts", () => {
   assert.equal(quote.recommendation.recommendedPayment, "monthly");
 });
 
-test("falls back to the default variable duration when none is provided", () => {
-  assert.equal(resolveDuration("abitativo-studenti"), 12);
+test("supports studenti durations up to 36 months", () => {
+  const options = getDurationOptions(CONTRACT_TYPES[1]);
+
+  assert.equal(options[0].label, "6 mesi");
+  assert.equal(options.at(-1).label, "36 mesi");
+  assert.equal(resolveDuration("studenti", 36), 36);
 });
 
-test("uses fixed durations for standard contracts", () => {
+test("falls back to the default variable duration when none is provided", () => {
+  assert.equal(resolveDuration("studenti"), 12);
+});
+
+test("uses fixed durations for abitativo contracts", () => {
   const quote = calculateQuote({
     plan: "start",
     payment: "single",
-    contractTypeValue: "abitativo-4-4",
+    contractTypeValue: "abitativo",
     rent: 300,
     condoFees: 60
   });
@@ -65,14 +77,16 @@ test("applies the full plan surcharge only to soluzione unica", () => {
   const singleQuote = calculateQuote({
     plan: "full",
     payment: "single",
-    contractTypeValue: "abitativo-concordato-5-2",
+    contractTypeValue: "abitativo-concordato",
+    duration: 60,
     rent: 700,
     condoFees: 150
   });
   const monthlyQuote = calculateQuote({
     plan: "full",
     payment: "monthly",
-    contractTypeValue: "abitativo-concordato-5-2",
+    contractTypeValue: "abitativo-concordato",
+    duration: 60,
     rent: 700,
     condoFees: 150
   });
@@ -90,20 +104,28 @@ test("marks commerciale and non abitativo quotes as VAT excluded", () => {
   const commercialQuote = calculateQuote({
     plan: "start",
     payment: "single",
-    contractTypeValue: "commerciale-6-6",
+    contractTypeValue: "commerciale",
     rent: 3000,
     condoFees: 300
   });
   const nonResidentialQuote = calculateQuote({
     plan: "start",
     payment: "monthly",
-    contractTypeValue: "non-abitativo-1-1",
+    contractTypeValue: "non-abitativo",
+    duration: 24,
     rent: 300,
     condoFees: 25
   });
 
   assert.equal(commercialQuote.vatExcluded, true);
   assert.equal(nonResidentialQuote.vatExcluded, true);
+});
+
+test("exposes the expected labels for variable duration selectors", () => {
+  assert.equal(getDurationLabel("non-abitativo", 12), "1 anno");
+  assert.equal(getDurationLabel("non-abitativo", 72), "6 anni");
+  assert.equal(getDurationLabel("abitativo-concordato", 48), "4+2");
+  assert.equal(getDurationLabel("commerciale", 72), "6+6");
 });
 
 test("computes the cheaper payment option for the selected plan", () => {
@@ -122,4 +144,20 @@ test("computes the cheaper payment option for the selected plan", () => {
   assert.equal(startRecommendation.savings, 382);
   assert.equal(fullRecommendation.recommendedPayment, "single");
   assert.equal(fullRecommendation.savings, 7860);
+});
+
+test("normalizes invalid development start steps to the first step", () => {
+  assert.equal(normalizeInitialStep(0), 1);
+  assert.equal(normalizeInitialStep("3"), 3);
+  assert.equal(normalizeInitialStep(9), 1);
+});
+
+test("seeds form data only when starting after the first step", () => {
+  assert.equal(getDevelopmentBootstrap(1).formValues, null);
+  assert.deepEqual(getDevelopmentBootstrap(3).formValues, DEFAULT_DEV_FORM_VALUES);
+});
+
+test("preselects a payment only when jumping directly to the summary step", () => {
+  assert.equal(getDevelopmentBootstrap(3).selectedPayment, null);
+  assert.equal(getDevelopmentBootstrap(4).selectedPayment, "single");
 });
