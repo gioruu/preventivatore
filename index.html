@@ -8,6 +8,14 @@
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <script>
+  if (window.location.hash.includes("figmacapture=")) {
+   const captureScript = document.createElement("script");
+   captureScript.src = "https://mcp.figma.com/mcp/html-to-design/capture.js";
+   captureScript.async = true;
+   document.head.appendChild(captureScript);
+  }
+ </script>
  <style>
   :root {
    --bg-color: #f4f5f7;
@@ -1133,8 +1141,10 @@
  <script src="./quote-logic.js"></script>
  <script src="./form-dev-utils.js"></script>
  <script>
-   // Development helper: set 1-4 to open the form on a specific step after refresh.
-   const DEV_INITIAL_STEP = 2;
+   // Development helper: set ?step=1..4 to open the form on a specific step after refresh.
+   const DEV_INITIAL_STEP = window.formDevUtils.normalizeInitialStep(
+     new URLSearchParams(window.location.search).get("step") ?? 2
+   );
 
    let currentStep = 1;
    let selectedPlan = null;
