@@ -166,10 +166,15 @@
   }
   .field { display: flex; flex-direction: column; gap: 7px; }
   .field-copy { display: flex; flex-direction: column; gap: 3px; }
-  .field label {
+  .field label,
+  .field-label {
    font-size: 15px;
    font-weight: 600;
    color: var(--text-color);
+  }
+  .field-label {
+   margin: 0;
+   line-height: 1.4;
   }
   .field-hint {
    font-size: 13px;
@@ -189,7 +194,7 @@
    font-weight: 500;
    color: var(--muted-color);
   }
-  .field input, .field select {
+  .field input:not([type="radio"]), .field select {
    width: 100%;
    height: 52px;
    padding: 0 18px;
@@ -201,8 +206,8 @@
    outline: none;
    transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .field input::placeholder { color: var(--faint-color); }
-  .field input:focus, .field select:focus {
+  .field input:not([type="radio"])::placeholder { color: var(--faint-color); }
+  .field input:not([type="radio"]):focus, .field select:focus {
    border-color: var(--primary-color);
    box-shadow: 0 0 0 3px var(--primary-ring);
   }
@@ -215,6 +220,47 @@
    background-size: 16px;
    cursor: pointer;
   }
+  .choice-grid {
+   display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   gap: 10px;
+  }
+  .choice-card {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   min-height: 48px;
+   padding: 12px 14px;
+   border: 1px solid var(--border-color);
+   border-radius: 10px;
+   background: var(--surface-color);
+   cursor: pointer;
+   transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  }
+  .choice-card:hover {
+   border-color: #c5c9d2;
+   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .choice-card:focus-within {
+   border-color: var(--primary-color);
+   box-shadow: 0 0 0 3px var(--primary-ring);
+  }
+  .choice-card.is-selected {
+   border-color: var(--primary-color);
+   background: var(--primary-tint);
+   box-shadow: 0 0 0 3px var(--primary-ring);
+  }
+  .choice-card input[type="radio"] {
+   margin: 0;
+   accent-color: var(--primary-color);
+  }
+  .choice-card span {
+   font-size: 14px;
+   font-weight: 600;
+   line-height: 1.2;
+   white-space: nowrap;
+   color: var(--text-color);
+  }
   .input-prefix { position: relative; }
   .input-prefix span {
    position: absolute;
@@ -226,7 +272,7 @@
    font-size: 14px;
    pointer-events: none;
   }
-  .input-prefix input { padding-left: 36px; }
+  .field .input-prefix input { padding-left: 30px; }
 
   /* Buttons */
   .back-button, .ghost-button, .primary-button {
@@ -834,7 +880,7 @@
    .page-wrap { padding: 20px 16px 48px; }
    .embed-shell { padding: 40px 28px 36px; border-radius: 18px; }
    .step-list::before { left: 30px; right: 30px; }
-   .option-grid, .summary-grid { grid-template-columns: 1fr; }
+   .choice-grid, .option-grid, .summary-grid { grid-template-columns: 1fr; }
    .action-row, .quote-actions, .lead-capture-actions { flex-direction: column; align-items: stretch; }
    .back-button, .ghost-button, .primary-button { width: 100%; }
    .summary-panel { flex-direction: column; align-items: flex-start; }
@@ -894,16 +940,12 @@
       <div class="section-body">
        <div class="form-grid">
         <div class="field full">
-         <div class="field-copy"><label for="property-category">Categoria contratto</label></div>
-         <select id="property-category" required>
-          <option value="">Seleziona categoria contratto...</option>
-         </select>
+         <div class="field-copy"><p id="property-category-label" class="field-label">Categoria contratto</p></div>
+         <div id="property-category" class="choice-grid" role="radiogroup" aria-labelledby="property-category-label"></div>
         </div>
         <div id="property-type-field" class="field full hidden">
-         <div class="field-copy"><label for="property-type">Tipologia contratto</label></div>
-         <select id="property-type" required disabled>
-          <option value="">Seleziona tipologia contratto...</option>
-         </select>
+         <div class="field-copy"><p id="property-type-label" class="field-label">Tipologia contratto</p></div>
+         <div id="property-type" class="choice-grid" role="radiogroup" aria-labelledby="property-type-label"></div>
         </div>
         <div id="contract-duration-field" class="field full hidden">
          <div class="field-copy"><label for="contract-duration">Durata contratto</label></div>
@@ -1138,7 +1180,7 @@
         </div>
        </div>
        <div class="cost-panel">
-        <div class="cost-row"><span>All'inizio</span><strong id="activation-fee">&euro;0,00</strong></div>
+        <div class="cost-row"><span>Una tantum</span><strong id="activation-fee">&euro;0,00</strong></div>
         <div class="cost-row"><span>Ogni mese</span><strong id="service-fee-monthly">&euro;0,00</strong></div>
         <div class="cost-row"><span>Totale contratto</span><strong id="contract-total">&euro;0,00</strong></div>
        </div>
@@ -1482,13 +1524,37 @@
      setTimeout(() => toast.remove(), 3000);
    }
 
-   function populateContractCategories() {
-     const propertyCategory = document.getElementById("property-category");
+   function syncChoiceGroupSelection(groupName) {
+     document.querySelectorAll(`input[name="${groupName}"]`).forEach((input) => {
+       input.closest(".choice-card")?.classList.toggle("is-selected", input.checked);
+     });
+   }
 
-     propertyCategory.insertAdjacentHTML(
-       "beforeend",
-       CONTRACT_CATEGORIES.map(({ value, label }) => `<option value="${value}">${label}</option>`).join("")
-     );
+   function getCheckedRadioValue(groupName) {
+     return document.querySelector(`input[name="${groupName}"]:checked`)?.value || "";
+   }
+
+   function setCheckedRadioValue(groupName, value) {
+     document.querySelectorAll(`input[name="${groupName}"]`).forEach((input) => {
+       input.checked = input.value === value;
+     });
+
+     syncChoiceGroupSelection(groupName);
+   }
+
+   function renderRadioGroup(groupId, options, selectedValue = "") {
+     const group = document.getElementById(groupId);
+
+     group.innerHTML = options.map(({ value, label }) => `
+       <label class="choice-card${value === selectedValue ? " is-selected" : ""}" for="${groupId}-${value}">
+        <input type="radio" id="${groupId}-${value}" name="${groupId}" value="${value}"${value === selectedValue ? " checked" : ""}>
+        <span>${label}</span>
+       </label>
+     `).join("");
+   }
+
+   function populateContractCategories() {
+     renderRadioGroup("property-category", CONTRACT_CATEGORIES);
    }
 
    function syncPropertyData(formValues) {
@@ -1508,33 +1574,30 @@
    }
 
    function syncContractTypeField() {
-     const propertyCategory = document.getElementById("property-category").value;
+     const propertyCategory = getCheckedRadioValue("property-category");
      const propertyTypeField = document.getElementById("property-type-field");
      const propertyType = document.getElementById("property-type");
+     const currentType = getCheckedRadioValue("property-type");
      const contractTypes = getContractTypesByCategory(propertyCategory);
-     const currentType = propertyType.value;
 
      if (!contractTypes.length) {
-       propertyType.innerHTML = '<option value="">Seleziona tipologia contratto...</option>';
-       propertyType.value = "";
-       propertyType.disabled = true;
+       propertyType.innerHTML = "";
        propertyTypeField.classList.add("hidden");
        syncDurationField();
        return;
      }
 
-     propertyType.innerHTML = [
-       '<option value="">Seleziona tipologia contratto...</option>',
-       ...contractTypes.map(({ value, label }) => `<option value="${value}">${label}</option>`)
-     ].join("");
-     propertyType.value = contractTypes.some(({ value }) => value === currentType) ? currentType : "";
-     propertyType.disabled = false;
+     renderRadioGroup(
+       "property-type",
+       contractTypes,
+       contractTypes.some(({ value }) => value === currentType) ? currentType : ""
+     );
      propertyTypeField.classList.remove("hidden");
      syncDurationField();
    }
 
    function syncDurationField() {
-     const contractType = getContractType(document.getElementById("property-type").value);
+     const contractType = getContractType(getCheckedRadioValue("property-type"));
      const durationField = document.getElementById("contract-duration-field");
      const durationSelect = document.getElementById("contract-duration");
      const durationOptions = getDurationOptions(contractType);
@@ -1560,9 +1623,9 @@
      const { step, formValues, selectedPlan: plan, selectedPayment: payment } = getDevelopmentBootstrap(DEV_INITIAL_STEP);
 
      if (formValues) {
-       document.getElementById("property-category").value = getContractCategory(formValues.contractTypeValue);
+       setCheckedRadioValue("property-category", getContractCategory(formValues.contractTypeValue));
        syncContractTypeField();
-       document.getElementById("property-type").value = formValues.contractTypeValue;
+       setCheckedRadioValue("property-type", formValues.contractTypeValue);
        syncDurationField();
        document.getElementById("contract-duration").value = String(formValues.duration);
        document.getElementById("rent").value = formValues.rent;
@@ -1588,8 +1651,8 @@
    }
 
    function validateStep1() {
-     const contractCategoryValue = document.getElementById("property-category").value;
-     const contractTypeValue = document.getElementById("property-type").value;
+     const contractCategoryValue = getCheckedRadioValue("property-category");
+     const contractTypeValue = getCheckedRadioValue("property-type");
      const durationValue = document.getElementById("contract-duration").value;
      const rent = Number(document.getElementById("rent").value);
 
@@ -2054,8 +2117,14 @@
      document.getElementById("btn-step3").disabled = true;
    }
 
-   document.getElementById("property-category").addEventListener("change", syncContractTypeField);
-   document.getElementById("property-type").addEventListener("change", syncDurationField);
+   document.getElementById("property-category").addEventListener("change", () => {
+     syncChoiceGroupSelection("property-category");
+     syncContractTypeField();
+   });
+   document.getElementById("property-type").addEventListener("change", () => {
+     syncChoiceGroupSelection("property-type");
+     syncDurationField();
+   });
 
    document.getElementById("btn-step1").addEventListener("click", () => {
      if (validateStep1()) showSection(2);
@@ -2113,8 +2182,7 @@
      currentQuote = null;
      leadEmail = "";
 
-     document.getElementById("property-category").value = "";
-     document.getElementById("property-type").value = "";
+     setCheckedRadioValue("property-category", "");
      syncContractTypeField();
      document.getElementById("rent").value = "";
      document.getElementById("condo-fees").value = "";

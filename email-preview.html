@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Email Preview</title>
+ <style>
+  :root {
+   color-scheme: light;
+   --bg: #e8ebef;
+   --panel: rgba(255, 255, 255, 0.88);
+   --frame: #cfd5dd;
+   --text: #18202a;
+   --muted: #667085;
+   --accent: #18202a;
+   --shadow: 0 20px 60px rgba(24, 32, 42, 0.12);
+   --radius: 24px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+   margin: 0;
+   min-height: 100vh;
+   font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+   color: var(--text);
+   background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.92), transparent 42%),
+    linear-gradient(180deg, #f6f7f9 0%, var(--bg) 100%);
+  }
+
+  .page {
+   width: min(1280px, 100%);
+   margin: 0 auto;
+   padding: 32px 20px 48px;
+  }
+
+  .toolbar {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   justify-content: space-between;
+   gap: 16px;
+   margin-bottom: 24px;
+   padding: 18px 20px;
+   border: 1px solid rgba(24, 32, 42, 0.08);
+   border-radius: var(--radius);
+   background: var(--panel);
+   backdrop-filter: blur(18px);
+   box-shadow: 0 8px 30px rgba(24, 32, 42, 0.08);
+  }
+
+  .toolbar-copy h1 {
+   margin: 0;
+   font-size: clamp(24px, 3vw, 32px);
+   line-height: 1.1;
+   letter-spacing: -0.03em;
+  }
+
+  .toolbar-copy p {
+   margin: 6px 0 0;
+   color: var(--muted);
+   font-size: 14px;
+  }
+
+  .toolbar-actions {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   gap: 12px;
+  }
+
+  .status {
+   font-size: 13px;
+   color: var(--muted);
+  }
+
+  button {
+   border: 0;
+   border-radius: 999px;
+   padding: 12px 18px;
+   font: inherit;
+   font-size: 14px;
+   font-weight: 600;
+   color: #fff;
+   background: var(--accent);
+   cursor: pointer;
+  }
+
+  button:hover { opacity: 0.94; }
+
+  .preview-shell {
+   padding: 24px;
+   border: 1px solid rgba(24, 32, 42, 0.08);
+   border-radius: calc(var(--radius) + 8px);
+   background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.92));
+   box-shadow: var(--shadow);
+  }
+
+  .preview-frame {
+   width: min(100%, 720px);
+   margin: 0 auto;
+   border: 1px solid var(--frame);
+   border-radius: 18px;
+   overflow: hidden;
+   background: #fff;
+   box-shadow: 0 20px 40px rgba(24, 32, 42, 0.12);
+  }
+
+  iframe {
+   display: block;
+   width: 100%;
+   min-height: 780px;
+   border: 0;
+   background: #fff;
+  }
+
+  .empty-state {
+   display: none;
+   width: min(100%, 720px);
+   margin: 0 auto;
+   padding: 80px 32px;
+   text-align: center;
+   border: 1px dashed var(--frame);
+   border-radius: 18px;
+   background: rgba(255, 255, 255, 0.78);
+  }
+
+  .empty-state.is-visible { display: block; }
+
+  .empty-state h2 {
+   margin: 0;
+   font-size: 24px;
+   letter-spacing: -0.02em;
+  }
+
+  .empty-state p {
+   max-width: 420px;
+   margin: 10px auto 0;
+   color: var(--muted);
+   line-height: 1.6;
+  }
+
+  .preview-frame.is-hidden { display: none; }
+
+  @media (max-width: 720px) {
+   .page { padding-inline: 14px; }
+   .toolbar { padding: 16px; }
+   .preview-shell { padding: 14px; }
+   iframe { min-height: 640px; }
+  }
+ </style>
+</head>
+<body>
+ <main class="page">
+  <section class="toolbar" aria-label="Email preview controls">
+   <div class="toolbar-copy">
+    <h1>Preview `email1.html`</h1>
+    <p>Edit the email file, then reload this preview to inspect the rendered output in the browser.</p>
+   </div>
+   <div class="toolbar-actions">
+    <span id="preview-status" class="status" aria-live="polite">Checking email1.html...</span>
+    <button type="button" id="reload-preview">Reload preview</button>
+   </div>
+  </section>
+
+  <section class="preview-shell">
+   <div id="empty-state" class="empty-state" aria-live="polite">
+    <h2>`email1.html` is empty</h2>
+    <p>Add your email markup to <code>email1.html</code>, then reload this page to preview it here.</p>
+   </div>
+
+   <div id="preview-frame" class="preview-frame">
+    <iframe
+      id="email-frame"
+      title="Preview of email1.html"
+      loading="eager"
+      referrerpolicy="no-referrer"
+    ></iframe>
+   </div>
+  </section>
+ </main>
+
+ <script>
+  const emailPath = "./email1.html";
+  const frame = document.getElementById("email-frame");
+  const frameShell = document.getElementById("preview-frame");
+  const emptyState = document.getElementById("empty-state");
+  const status = document.getElementById("preview-status");
+  const reloadButton = document.getElementById("reload-preview");
+
+  function setPreviewState(isEmpty) {
+   emptyState.classList.toggle("is-visible", isEmpty);
+   frameShell.classList.toggle("is-hidden", isEmpty);
+   status.textContent = isEmpty ? "email1.html is empty" : "Previewing the latest email1.html";
+  }
+
+  async function refreshPreview() {
+   status.textContent = "Refreshing preview...";
+
+   try {
+    const response = await fetch(`${emailPath}?t=${Date.now()}`, { cache: "no-store" });
+
+    if (!response.ok) {
+      throw new Error(`Preview unavailable (${response.status})`);
+    }
+
+    const html = await response.text();
+    const isEmpty = html.trim().length === 0;
+    setPreviewState(isEmpty);
+
+    if (!isEmpty) {
+      frame.src = `${emailPath}?t=${Date.now()}`;
+    }
+   } catch (error) {
+    setPreviewState(true);
+    status.textContent = error.message;
+    emptyState.innerHTML =
+      "<h2>Unable to load email1.html</h2><p>Make sure the file exists in the project root, then reload this preview.</p>";
+   }
+  }
+
+  reloadButton.addEventListener("click", refreshPreview);
+  window.addEventListener("focus", refreshPreview);
+
+  refreshPreview();
+ </script>
+</body>
+</html>

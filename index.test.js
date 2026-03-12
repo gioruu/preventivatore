@@ -8,22 +8,31 @@ const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
 test("step 1 keeps the quote inputs primary and de-emphasizes the address", () => {
   assert.match(html, /<h1 id="main-title" class="section-heading hero-title">Confronta la formula giusta per il tuo affitto<\/h1>/);
   assert.match(html, /Inserisci i dati essenziali e confronta subito le opzioni\./);
-  assert.match(html, /<label for="property-category">Categoria contratto<\/label>/);
-  assert.match(html, /<label for="property-type">Tipologia contratto<\/label>/);
+  assert.match(html, /<p id="property-category-label" class="field-label">Categoria contratto<\/p>/);
+  assert.match(html, /<div id="property-category" class="choice-grid" role="radiogroup" aria-labelledby="property-category-label"><\/div>/);
+  assert.match(html, /<p id="property-type-label" class="field-label">Tipologia contratto<\/p>/);
   assert.match(html, /id="property-type-field" class="field full hidden"/);
+  assert.match(html, /<div id="property-type" class="choice-grid" role="radiogroup" aria-labelledby="property-type-label"><\/div>/);
   assert.match(html, /<label for="rent">Canone mensile<\/label>/);
   assert.match(html, /<label for="condo-fees">Spese condominiali mensili<\/label>/);
   assert.match(html, /class="field full field-secondary">/);
   assert.match(html, /Aggiungi immobile <span class="field-optional">\(facoltativo\)<\/span>/);
   assert.match(html, /<span id="cta-calculate">Confronta le opzioni<\/span>/);
+  assert.doesNotMatch(html, /<select id="property-category"/);
+  assert.doesNotMatch(html, /<select id="property-type"/);
 });
 
 test("step 1 filters contract types by category and keeps variable durations unselected", () => {
+  assert.match(html, /function syncChoiceGroupSelection\(groupName\)/);
+  assert.match(html, /function getCheckedRadioValue\(groupName\)/);
+  assert.match(html, /function setCheckedRadioValue\(groupName, value\)/);
+  assert.match(html, /function renderRadioGroup\(groupId, options, selectedValue = ""\)/);
   assert.match(html, /function populateContractCategories\(\)/);
   assert.match(html, /function syncContractTypeField\(\)/);
+  assert.match(html, /renderRadioGroup\("property-category", CONTRACT_CATEGORIES\);/);
   assert.match(html, /getContractTypesByCategory\(propertyCategory\)/);
-  assert.match(html, /propertyType\.innerHTML = '<option value="">Seleziona tipologia contratto\.\.\.<\/option>';/);
-  assert.match(html, /document\.getElementById\("property-category"\)\.addEventListener\("change", syncContractTypeField\);/);
+  assert.match(html, /renderRadioGroup\(\s+"property-type",\s+contractTypes,\s+contractTypes\.some\(\(\{ value \}\) => value === currentType\) \? currentType : ""\s+\);/s);
+  assert.match(html, /document\.getElementById\("property-category"\)\.addEventListener\("change", \(\) => {\s+syncChoiceGroupSelection\("property-category"\);\s+syncContractTypeField\(\);\s+}\);/s);
   assert.match(html, /'<option value="">Seleziona durata contratto\.\.\.<\/option>'/);
   assert.match(html, /durationSelect\.value = durationOptions\.some\(\(\{ value \}\) => value === currentDuration\)\s+\? String\(currentDuration\)\s+: "";/);
   assert.match(html, /if \(requiresDurationSelection\(contractTypeValue\) && !durationValue\) {\s+showToast\("Seleziona la durata del contratto", "error"\);/s);
