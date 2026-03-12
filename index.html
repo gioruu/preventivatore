@@ -1524,14 +1524,20 @@
      setTimeout(() => toast.remove(), 3000);
    }
 
-   function syncChoiceGroupSelection(groupName) {
+  function syncChoiceGroupSelection(groupName) {
      document.querySelectorAll(`input[name="${groupName}"]`).forEach((input) => {
-       input.closest(".choice-card")?.classList.toggle("is-selected", input.checked);
+       const choiceCard = input.closest(".choice-card");
+
+       if (choiceCard) {
+         choiceCard.classList.toggle("is-selected", input.checked);
+       }
      });
    }
 
    function getCheckedRadioValue(groupName) {
-     return document.querySelector(`input[name="${groupName}"]:checked`)?.value || "";
+     const checkedInput = document.querySelector(`input[name="${groupName}"]:checked`);
+
+     return checkedInput ? checkedInput.value : "";
    }
 
    function setCheckedRadioValue(groupName, value) {
