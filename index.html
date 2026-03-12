@@ -9,12 +9,10 @@
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
  <script>
-  if (window.location.hash.includes("figmacapture=")) {
    const captureScript = document.createElement("script");
    captureScript.src = "https://mcp.figma.com/mcp/html-to-design/capture.js";
    captureScript.async = true;
    document.head.appendChild(captureScript);
-  }
  </script>
  <style>
   :root {
@@ -123,7 +121,7 @@
    background: var(--surface-color);
    border-radius: 24px;
    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08);
-   padding: 40px 64px;
+   padding: 46px 52px;
    border: 1px solid rgba(0,0,0,0.04);
   }
 
@@ -131,9 +129,9 @@
   .content-section { display: flex; flex-direction: column; }
 
   /* Section header */
-  .section-copy { margin-bottom: 16px; }
+  .section-copy { margin-bottom: 24px; }
   .section-kicker {
-   margin: 0 0 4px;
+   margin: 0 0 24px;
    font-size: 12px;
    font-weight: 700;
    letter-spacing: 0.06em;
@@ -437,6 +435,7 @@
    font-size: 14px;
    font-weight: 700;
    color: var(--text-color);
+   margin-top: 4px;
   }
   .decision-note-text,
   .verification-panel p {
@@ -445,13 +444,18 @@
    line-height: 1.5;
    color: var(--muted-color);
   }
-  .plan-grid { gap: 16px; }
+  .plan-grid {
+   gap: 16px;
+   align-items: start;
+  }
   .plan-card {
    display: flex;
    flex-direction: column;
    gap: 14px;
-   padding: 22px;
+   min-height: 395px;
+   padding: 16px 23px 0;
    border-radius: 16px;
+   overflow: visible;
   }
   .plan-card-header {
    display: flex;
@@ -462,7 +466,8 @@
   .plan-card-copy {
    display: flex;
    flex-direction: column;
-   gap: 8px;
+   gap: 4px;
+   padding-top: 4px;
   }
   .plan-ownership {
    display: inline-flex;
@@ -488,6 +493,13 @@
    line-height: 1.6;
    color: var(--muted-color);
   }
+  .plan-summary {
+   min-height: 67px;
+  }
+  .plan-card .option-title {
+   margin: 0;
+   line-height: 1.5;
+  }
   .plan-product-name {
    margin: 0;
    font-size: 12px;
@@ -499,24 +511,26 @@
   .plan-facts {
    display: flex;
    flex-direction: column;
-   gap: 12px;
-   padding: 14px 16px;
-   border: 1px solid var(--border-color);
-   border-radius: 12px;
-   background: rgba(255,255,255,0.82);
+   width: calc(100% + 44px);
+   margin: auto -22px 0;
+   padding: 13px 25px 10px;
+   border-top: 1px solid var(--border-color);
+   border-radius: 0 0 15px 15px;
+   background: #f8fafc;
   }
   .plan-fact {
    display: flex;
    align-items: center;
    justify-content: space-between;
    gap: 12px;
+   min-height: 24px;
+   padding: 6px 0;
    font-size: 13px;
   }
-  .plan-fact + .plan-fact {
-   padding-top: 12px;
-   border-top: 1px solid var(--border-color);
+  .plan-card.selected .plan-facts {
+   border-top-color: rgba(37,99,235,0.24);
+   background: #f8fbff;
   }
-  .plan-card.selected .plan-facts { border-color: rgba(37,99,235,0.24); }
   .plan-fact span:first-child {
    font-size: 12px;
    line-height: 1.4;
@@ -527,17 +541,54 @@
    min-height: 0;
    padding: 0;
    border-radius: 0;
-   border: 0;
    background: none;
    font-size: 16px;
    line-height: 1.3;
    font-weight: 700;
+   text-align: right;
   }
   .plan-owner.is-domeo {
-   color: var(--text-color);
+   color: var(--primary-color);
   }
   .plan-owner.is-user {
-   color: var(--text-color);
+   color: #374151;
+  }
+  .step-2-body {
+   gap: 22px;
+  }
+  .step-2-note {
+   display: flex;
+   flex-direction: column;
+   gap: 4px;
+  }
+  .step-2-note .decision-note-text {
+   margin: 0;
+  }
+  .step-2-actions {
+   border-top: 0;
+   padding-top: 10px;
+   margin-top: 0;
+  }
+  .plan-card--full .option-badge {
+   position: absolute;
+   top: -10px;
+   right: -15px;
+   padding: 7px 15px;
+   background: var(--primary-color);
+   color: #fff;
+   line-height: 1.5;
+   box-shadow: 0 2px 8px rgba(37,99,235,0.14);
+   z-index: 1;
+  }
+  .plan-card--full .option-check {
+   top: 26px;
+   right: 18px;
+  }
+  .plan-card--full .plan-card-copy {
+   gap: 5px;
+  }
+  .plan-card--start .plan-summary {
+   min-height: 45px;
   }
   .payment-grid { gap: 16px; }
   .payment-card {
@@ -843,9 +894,9 @@
      <span class="step-node">2</span>
      <span class="step-copy"><span class="step-title">Copertura</span></span>
     </button>
-    <button type="button" id="step-3" class="step-item is-upcoming" aria-label="Vai al passo 3: Costo">
+    <button type="button" id="step-3" class="step-item is-upcoming" aria-label="Vai al passo 3: Soluzione">
      <span class="step-node">3</span>
-     <span class="step-copy"><span class="step-title">Costo</span></span>
+     <span class="step-copy"><span class="step-title">Soluzione</span></span>
     </button>
     <button type="button" id="step-4" class="step-item is-upcoming" aria-label="Vai al passo 4: Riepilogo">
      <span class="step-node">4</span>
@@ -920,11 +971,10 @@
       <h2 class="section-heading">Chi vuoi che gestisca gli incassi?</h2>
       <p class="section-text">La copertura resta la stessa: cambia il modo in cui ricevi i pagamenti e come vengono gestiti i ritardi.</p>
      </div>
-     <div class="section-divider"></div>
      <div class="section-layout">
-      <div class="section-body">
+      <div class="section-body step-2-body">
        <div class="option-grid plan-grid">
-        <div id="plan-start" class="option-card plan-card" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-start-title plan-start-name plan-start-ownership">
+        <div id="plan-start" class="option-card plan-card plan-card--start" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-start-title plan-start-ownership">
          <div id="check-start" class="option-check hidden">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 13 4 4L19 7"/></svg>
          </div>
@@ -932,17 +982,16 @@
           <div class="plan-card-copy">
            <p id="plan-start-ownership" class="plan-ownership">Gestiti da te direttamente</p>
            <h3 id="plan-start-title" class="option-title">Ricevi tu i canoni</h3>
-           <p id="plan-start-name" class="plan-product-name">START</p>
           </div>
          </div>
          <p class="plan-summary">Continui a incassare tu. Domeo segue ritardi, recupero e supporto legale.</p>
          <div class="plan-facts" aria-label="Dettagli piano Start">
           <div class="plan-fact"><span>Incasso canoni</span><span class="plan-owner is-user">Tu</span></div>
           <div class="plan-fact"><span>Ritardi</span><span class="plan-owner is-domeo">Domeo</span></div>
-          <div class="plan-fact"><span>Pagamento se salta</span><span class="plan-owner is-domeo">A recupero</span></div>
+          <div class="plan-fact"><span>Pagamenti</span><span class="plan-owner is-user">A recupero</span></div>
          </div>
         </div>
-        <div id="plan-full" class="option-card plan-card" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-full-title plan-full-name plan-full-ownership">
+        <div id="plan-full" class="option-card plan-card plan-card--full" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-full-title plan-full-ownership">
          <div id="check-full" class="option-check hidden">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 13 4 4L19 7"/></svg>
          </div>
@@ -950,21 +999,22 @@
           <div class="plan-card-copy">
            <p id="plan-full-ownership" class="plan-ownership">Gestiti tramite Domeo</p>
            <h3 id="plan-full-title" class="option-title">Domeo gestisce i pagamenti</h3>
-           <p id="plan-full-name" class="plan-product-name">FULL</p>
           </div>
-          <span class="option-badge">Più semplice</span>
+          <span class="option-badge">Più popolare</span>
          </div>
          <p class="plan-summary">Domeo gestisce incassi, ritardi e continuità del pagamento per tutto il contratto.</p>
          <div class="plan-facts" aria-label="Dettagli piano Full">
           <div class="plan-fact"><span>Incasso canoni</span><span class="plan-owner is-domeo">Domeo</span></div>
-         <div class="plan-fact"><span>Pagamenti</span><span class="plan-owner is-domeo">Ogni mese</span></div>
          <div class="plan-fact"><span>Ritardi</span><span class="plan-owner is-domeo">Domeo</span></div>
+         <div class="plan-fact"><span>Pagamenti</span><span class="plan-owner is-domeo">Ogni mese</span></div>
          </div>
         </div>
        </div>
-       <strong class="decision-note-title">Fino a 12 mensilità coperte e assistenza legale incluse.</strong>
-       <p class="decision-note-text">Scegli solo se vuoi gestire tu gli incassi o delegarli a Domeo.</p>
-       <div class="action-row">
+       <div class="step-2-note">
+        <strong class="decision-note-title">Fino a 12 mensilità coperte e assistenza legale incluse.</strong>
+        <p class="decision-note-text">Scegli solo se vuoi gestire tu gli incassi o delegarli a Domeo.</p>
+       </div>
+       <div class="action-row step-2-actions">
         <button type="button" id="btn-back-2" class="back-button">
          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>Indietro
         </button>
