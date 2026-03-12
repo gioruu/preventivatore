@@ -157,7 +157,13 @@ test("seeds form data only when starting after the first step", () => {
   assert.deepEqual(getDevelopmentBootstrap(3).formValues, DEFAULT_DEV_FORM_VALUES);
 });
 
+test("keeps the plan unselected until the comparison step", () => {
+  assert.equal(getDevelopmentBootstrap(1).selectedPlan, null);
+  assert.equal(getDevelopmentBootstrap(2).selectedPlan, null);
+  assert.equal(getDevelopmentBootstrap(3).selectedPlan, "full");
+});
+
 test("preselects a payment only when jumping directly to the summary step", () => {
   assert.equal(getDevelopmentBootstrap(3).selectedPayment, null);
-  assert.equal(getDevelopmentBootstrap(4).selectedPayment, "single");
+  assert.equal(getDevelopmentBootstrap(4).selectedPayment, "monthly");
 });

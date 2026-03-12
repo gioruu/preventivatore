@@ -28,8 +28,8 @@
     return {
       step,
       formValues: step > 1 ? { ...DEFAULT_DEV_FORM_VALUES } : null,
-      selectedPlan: "full",
-      selectedPayment: step === 4 ? "single" : null
+      selectedPlan: step >= 3 ? "full" : null,
+      selectedPayment: step === 4 ? "monthly" : null
     };
   }
 

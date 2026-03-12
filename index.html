@@ -63,7 +63,15 @@
    flex-direction: column;
    align-items: center;
    gap: 8px;
+   width: 100%;
+   padding: 0;
+   border: 0;
+   background: transparent;
+   font: inherit;
+   cursor: pointer;
   }
+  .step-item:focus-visible { outline: none; }
+  .step-item:focus-visible .step-node { box-shadow: 0 0 0 4px var(--primary-ring); }
   .step-node {
    width: 36px;
    height: 36px;
@@ -167,6 +175,19 @@
    font-size: 13px;
    color: var(--muted-color);
    line-height: 1.4;
+  }
+  .field-secondary {
+   margin-top: 6px;
+   padding-top: 16px;
+   border-top: 1px solid var(--border-color);
+  }
+  .field-secondary label,
+  .field-secondary .field-hint {
+   color: var(--muted-color);
+  }
+  .field-optional {
+   font-weight: 500;
+   color: var(--muted-color);
   }
   .field input, .field select {
    width: 100%;
@@ -421,6 +442,14 @@
    font-size: 14px;
    line-height: 1.6;
    color: var(--muted-color);
+  }
+  .plan-product-name {
+   margin: 0;
+   font-size: 12px;
+   font-weight: 700;
+   letter-spacing: 0.08em;
+   color: var(--faint-color);
+   text-transform: uppercase;
   }
   .plan-facts {
    display: flex;
@@ -835,22 +864,22 @@
  <div class="page-wrap">
   <nav class="progress-shell">
    <div class="step-list">
-    <div id="step-1" class="step-item is-active">
-     <div class="step-node">1</div>
-     <div class="step-copy"><span class="step-title">Contratto</span></div>
-    </div>
-    <div id="step-2" class="step-item is-upcoming">
-     <div class="step-node">2</div>
-     <div class="step-copy"><span class="step-title">Gestione</span></div>
-    </div>
-    <div id="step-3" class="step-item is-upcoming">
-     <div class="step-node">3</div>
-     <div class="step-copy"><span class="step-title">Soluzione</span></div>
-    </div>
-    <div id="step-4" class="step-item is-upcoming">
-     <div class="step-node">4</div>
-     <div class="step-copy"><span class="step-title">Preventivo</span></div>
-    </div>
+    <button type="button" id="step-1" class="step-item is-active" aria-current="step" aria-label="Vai al passo 1: Immobile">
+     <span class="step-node">1</span>
+     <span class="step-copy"><span class="step-title">Immobile</span></span>
+    </button>
+    <button type="button" id="step-2" class="step-item is-upcoming" aria-label="Vai al passo 2: Copertura">
+     <span class="step-node">2</span>
+     <span class="step-copy"><span class="step-title">Copertura</span></span>
+    </button>
+    <button type="button" id="step-3" class="step-item is-upcoming" aria-label="Vai al passo 3: Costo">
+     <span class="step-node">3</span>
+     <span class="step-copy"><span class="step-title">Costo</span></span>
+    </button>
+    <button type="button" id="step-4" class="step-item is-upcoming" aria-label="Vai al passo 4: Riepilogo">
+     <span class="step-node">4</span>
+     <span class="step-copy"><span class="step-title">Riepilogo</span></span>
+    </button>
    </div>
   </nav>
 
@@ -860,8 +889,8 @@
     <section id="section-1" class="content-section fade-in">
      <div class="section-copy hero-copy">
       <p id="page-step" class="section-kicker">Preventivatore Domeo</p>
-      <h1 id="main-title" class="section-heading hero-title">Calcola il tuo preventivo</h1>
-      <p id="subtitle" class="section-text">Completa i passaggi per ottenere un preventivo chiaro e coerente con la tipologia di contratto selezionata.</p>
+      <h1 id="main-title" class="section-heading hero-title">Confronta la formula giusta per il tuo affitto</h1>
+      <p id="subtitle" class="section-text">Inserisci i dati essenziali e confronta subito le opzioni.</p>
      </div>
      <div class="section-divider"></div>
      <div class="section-layout">
@@ -894,14 +923,17 @@
           <input type="number" id="condo-fees" min="0" placeholder="es. 150">
          </div>
         </div>
-        <div class="field full">
-         <div class="field-copy"><label for="address">Indirizzo immobile</label></div>
+        <div class="field full field-secondary">
+         <div class="field-copy">
+          <label for="address">Aggiungi immobile <span class="field-optional">(facoltativo)</span></label>
+          <div class="field-hint">Serve solo per ritrovare il riepilogo con più facilità.</div>
+         </div>
          <input type="text" id="address" placeholder="Via Roma 15, Milano">
         </div>
        </div>
        <div class="action-row">
         <button type="button" id="btn-step1" class="primary-button">
-         <span id="cta-calculate">Calcola Preventivo</span>
+         <span id="cta-calculate">Confronta le opzioni</span>
          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
         </button>
        </div>
@@ -911,65 +943,67 @@
 
     <section id="section-2" class="content-section hidden">
      <div class="section-copy">
-      <p class="section-kicker">Step 2</p>
-      <h2 class="section-heading">Che tipo di affitto garantito vuoi attivare?</h2>
-      <p class="section-text">Entrambe le formule coprono fino a 12 mensilità e includono assistenza legale. La differenza è come vengono gestiti i pagamenti.</p>
+      <p class="section-kicker">Copertura</p>
+      <h2 class="section-heading">Chi vuoi che gestisca gli incassi?</h2>
+      <p class="section-text">La copertura resta la stessa: cambia il modo in cui ricevi i pagamenti e come vengono gestiti i ritardi.</p>
      </div>
      <div class="section-divider"></div>
      <div class="section-layout">
       <div class="section-body">
        <div class="decision-banner">
         <div>
-         <strong>Fino a 12 mensilità coperte e assistenza legale in caso di sfratto sono sempre incluse.</strong>
-         <span>Qui scegli se preferisci una copertura simile a fideiussione assicurativa o il pagamento puntuale ogni mese.</span>
+         <strong>Entrambe le formule includono fino a 12 mensilità coperte e assistenza legale.</strong>
+         <span>Scegli solo chi gestisce l'incasso e i ritardi.</span>
         </div>
        </div>
        <div class="option-grid plan-grid">
-        <div id="plan-start" class="option-card plan-card" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-start-name plan-start-ownership">
+        <div id="plan-start" class="option-card plan-card" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-start-title plan-start-name plan-start-ownership">
          <div id="check-start" class="option-check hidden">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 13 4 4L19 7"/></svg>
          </div>
          <div class="plan-card-header">
           <div class="plan-card-copy">
-           <p id="plan-start-ownership" class="plan-ownership">Pagamenti: tuoi</p>
-           <h3 id="plan-start-name" class="option-title">START</h3>
+           <p id="plan-start-ownership" class="plan-ownership">Incasso gestito da te</p>
+           <h3 id="plan-start-title" class="option-title">Gestisci tu gli incassi</h3>
+           <p id="plan-start-name" class="plan-product-name">START</p>
           </div>
          </div>
-         <p class="plan-summary">Affitto Garantito simile a fideiussione assicurativa.</p>
+         <p class="plan-summary">Ricevi tu i canoni e Domeo interviene quando serve.</p>
          <div class="plan-facts" aria-label="Dettagli piano Start">
-          <div class="plan-fact"><span>Copertura fino a 12 mensilità</span><span class="plan-owner is-domeo">Incluso</span></div>
-          <div class="plan-fact"><span>Assistenza legale in sfratto</span><span class="plan-owner is-domeo">Incluso</span></div>
-          <div class="plan-fact"><span>Arretrati al rilascio chiavi</span><span class="plan-owner is-domeo">Bonifico</span></div>
-          <div class="plan-fact"><span>Gestione pagamenti</span><span class="plan-owner is-user">Tu</span></div>
+          <div class="plan-fact"><span>Chi incassa ogni mese</span><span class="plan-owner is-user">Tu</span></div>
+          <div class="plan-fact"><span>Quando ricevi se c'è un ritardo</span><span class="plan-owner is-domeo">A recupero</span></div>
+          <div class="plan-fact"><span>Chi gestisce i ritardi</span><span class="plan-owner is-domeo">Domeo</span></div>
+          <div class="plan-fact"><span>Copertura inclusa</span><span class="plan-owner is-domeo">12 + legale</span></div>
          </div>
-         <p class="plan-note">Gestisci tu i pagamenti e ci attiviamo quando l'inquilino è in ritardo.</p>
+         <p class="plan-note">Più controllo diretto, con supporto Domeo quando l'inquilino ritarda.</p>
         </div>
-        <div id="plan-full" class="option-card plan-card" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-full-name plan-full-ownership">
+        <div id="plan-full" class="option-card plan-card" role="button" tabindex="0" aria-pressed="false" aria-labelledby="plan-full-title plan-full-name plan-full-ownership">
          <div id="check-full" class="option-check hidden">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 13 4 4L19 7"/></svg>
          </div>
          <div class="plan-card-header">
           <div class="plan-card-copy">
-           <p id="plan-full-ownership" class="plan-ownership">Pagamenti: Domeo</p>
-           <h3 id="plan-full-name" class="option-title">FULL</h3>
+           <p id="plan-full-ownership" class="plan-ownership">Incasso gestito da Domeo</p>
+           <h3 id="plan-full-title" class="option-title">Domeo ti paga ogni mese</h3>
+           <p id="plan-full-name" class="plan-product-name">FULL</p>
           </div>
-          <span class="option-badge">Consigliato</span>
+          <span class="option-badge">Più semplice</span>
          </div>
-         <p class="plan-summary">Affitto Garantito con pagamento puntuale.</p>
+         <p class="plan-summary">Domeo gestisce incasso, ritardi e continuità del pagamento.</p>
          <div class="plan-facts" aria-label="Dettagli piano Full">
-          <div class="plan-fact"><span>Copertura fino a 12 mensilità</span><span class="plan-owner is-domeo">Incluso</span></div>
-          <div class="plan-fact"><span>Assistenza legale in sfratto</span><span class="plan-owner is-domeo">Incluso</span></div>
-          <div class="plan-fact"><span>Pagamento puntuale ogni mese</span><span class="plan-owner is-domeo">Sempre</span></div>
-          <div class="plan-fact"><span>Gestione pagamenti e ritardi</span><span class="plan-owner is-domeo">Domeo</span></div>
+          <div class="plan-fact"><span>Chi incassa ogni mese</span><span class="plan-owner is-domeo">Domeo</span></div>
+          <div class="plan-fact"><span>Quando ricevi ogni mese</span><span class="plan-owner is-domeo">Puntuale</span></div>
+          <div class="plan-fact"><span>Chi gestisce i ritardi</span><span class="plan-owner is-domeo">Domeo</span></div>
+          <div class="plan-fact"><span>Copertura inclusa</span><span class="plan-owner is-domeo">12 + legale</span></div>
          </div>
-         <p class="plan-note">Zero pensieri, pensiamo a tutto noi.</p>
+         <p class="plan-note">Più delega operativa, con gestione centralizzata di incassi e ritardi.</p>
         </div>
       </div>
        <div class="action-row">
         <button type="button" id="btn-back-2" class="back-button">
          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>Indietro
         </button>
-        <button type="button" id="btn-step2" class="primary-button">
+        <button type="button" id="btn-step2" class="primary-button" disabled>
          Continua<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
         </button>
        </div>
@@ -979,9 +1013,9 @@
 
     <section id="section-3" class="content-section hidden">
      <div class="section-copy">
-      <p class="section-kicker">Step 3</p>
-      <h2 class="section-heading">Modalità di pagamento</h2>
-      <p id="payment-section-text" class="section-text">La scelta dipende dalle tue preferenze: pagamento unico iniziale oppure rate mensili costanti.</p>
+      <p class="section-kicker">Costo</p>
+      <h2 class="section-heading">Come vuoi distribuire il costo?</h2>
+      <p id="payment-section-text" class="section-text">La protezione non cambia: scegli solo se concentrare di più il costo all'inizio o distribuirlo nel tempo.</p>
      </div>
      <div class="section-divider"></div>
      <div class="section-layout">
@@ -1000,27 +1034,27 @@
          </div>
          <div class="payment-card-header">
           <div class="payment-card-copy">
-           <span id="payment-single-mode" class="payment-mode">Una tantum</span>
-           <h3 id="payment-single-title" class="option-title">UNICA</h3>
+           <span id="payment-single-mode" class="payment-mode">Più all'inizio</span>
+           <h3 id="payment-single-title" class="option-title">Più all'inizio</h3>
           </div>
           <span id="payment-single-badge" class="option-badge hidden">Più conveniente</span>
          </div>
          <div class="payment-amount">
           <div id="payment-single-total" class="payment-total">&euro;0,00</div>
-          <p id="payment-single-caption" class="payment-caption">Totale contratto</p>
+          <p id="payment-single-caption" class="payment-caption">Totale stimato</p>
          </div>
-         <div class="payment-breakdown" aria-label="Dettagli soluzione unica">
-          <div class="payment-row"><span>Oggi</span><strong id="payment-single-now">&euro;0,00</strong></div>
-          <div class="payment-row"><span>Ogni mese</span><strong id="payment-single-monthly">&euro;0,00</strong></div>
-          <div class="payment-row"><span>Totale contratto</span><strong id="payment-single-contract">&euro;0,00</strong></div>
+         <div class="payment-breakdown" aria-label="Dettagli quota più iniziale">
+          <div class="payment-row"><span>Quota iniziale</span><strong id="payment-single-now">&euro;0,00</strong></div>
+          <div class="payment-row"><span>Quota mensile</span><strong id="payment-single-monthly">&euro;0,00</strong></div>
+          <div class="payment-row"><span>Totale stimato</span><strong id="payment-single-contract">&euro;0,00</strong></div>
          </div>
          <ul class="payment-points">
-          <li id="payment-single-point-1">Paghi una mensilità completa una sola volta all'inizio.</li>
-          <li id="payment-single-point-2">Ti copre per tutta la durata del contratto.</li>
-          <li id="payment-single-point-3">Costo complessivo basato sulla durata del contratto.</li>
+          <li id="payment-single-point-1">Quota iniziale più alta.</li>
+          <li id="payment-single-point-2">Costo mensile ridotto o assente.</li>
+          <li id="payment-single-point-3" class="hidden"></li>
           <li id="payment-single-point-4" class="hidden"></li>
          </ul>
-         <p id="payment-single-note" class="payment-note">Importo concentrato all'attivazione.</p>
+         <p id="payment-single-note" class="payment-note">Più costo all'inizio, poi una quota mensile ridotta o assente.</p>
         </div>
         <div id="payment-monthly" class="option-card payment-card" role="button" tabindex="0" aria-pressed="false" aria-labelledby="payment-monthly-title payment-monthly-total">
          <div id="check-monthly" class="option-check hidden">
@@ -1028,27 +1062,27 @@
          </div>
          <div class="payment-card-header">
           <div class="payment-card-copy">
-           <span id="payment-monthly-mode" class="payment-mode">Ricorrente</span>
-           <h3 id="payment-monthly-title" class="option-title">MENSILIZZATA</h3>
+           <span id="payment-monthly-mode" class="payment-mode">Mese per mese</span>
+           <h3 id="payment-monthly-title" class="option-title">Mese per mese</h3>
           </div>
           <span id="payment-monthly-badge" class="option-badge hidden">Più conveniente</span>
          </div>
          <div class="payment-amount">
           <div id="payment-monthly-total" class="payment-total">&euro;0,00</div>
-          <p id="payment-monthly-caption" class="payment-caption">Totale contratto</p>
+          <p id="payment-monthly-caption" class="payment-caption">Totale stimato</p>
          </div>
-         <div class="payment-breakdown" aria-label="Dettagli soluzione mensilizzata">
-          <div class="payment-row"><span>Oggi</span><strong id="payment-monthly-now">&euro;0,00</strong></div>
-          <div class="payment-row"><span>Ogni mese</span><strong id="payment-monthly-monthly">&euro;0,00</strong></div>
-          <div class="payment-row"><span>Totale contratto</span><strong id="payment-monthly-contract">&euro;0,00</strong></div>
+         <div class="payment-breakdown" aria-label="Dettagli quota mese per mese">
+          <div class="payment-row"><span>Quota iniziale</span><strong id="payment-monthly-now">&euro;0,00</strong></div>
+          <div class="payment-row"><span>Quota mensile</span><strong id="payment-monthly-monthly">&euro;0,00</strong></div>
+          <div class="payment-row"><span>Totale stimato</span><strong id="payment-monthly-contract">&euro;0,00</strong></div>
          </div>
          <ul class="payment-points">
-          <li id="payment-monthly-point-1">Paghi il 5% dell'importo mensile da proteggere ogni mese.</li>
-          <li id="payment-monthly-point-2">Minimo 29€ al mese.</li>
-          <li id="payment-monthly-point-3">Massima flessibilità.</li>
-          <li id="payment-monthly-point-4">Paghi mese per mese.</li>
+          <li id="payment-monthly-point-1">Nessuna quota iniziale.</li>
+          <li id="payment-monthly-point-2">Costo distribuito in quote costanti.</li>
+          <li id="payment-monthly-point-3" class="hidden"></li>
+          <li id="payment-monthly-point-4" class="hidden"></li>
          </ul>
-         <p id="payment-monthly-note" class="payment-note">Costo distribuito mese per mese.</p>
+         <p id="payment-monthly-note" class="payment-note">Costo distribuito nel tempo, con meno peso iniziale.</p>
         </div>
        </div>
        <div class="action-row">
@@ -1056,7 +1090,7 @@
          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>Indietro
         </button>
         <button type="button" id="btn-step3" class="primary-button" disabled>
-         Vedi Preventivo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+         Vedi riepilogo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
         </button>
        </div>
       </div>
@@ -1065,32 +1099,32 @@
 
     <section id="section-4" class="content-section hidden">
      <div class="section-copy">
-      <p class="section-kicker">Step 4</p>
-      <h2 class="section-heading">Il tuo preventivo è pronto</h2>
-      <p class="section-text">Rivedi il riepilogo e scegli come preferisci proseguire: puoi scaricare il preventivo, richiedere l'attivazione o parlare con un operatore Domeo.</p>
+      <p class="section-kicker">Riepilogo</p>
+      <h2 class="section-heading">Ecco il riepilogo</h2>
+      <p class="section-text">Rivedi la soluzione scelta e, se vuoi, ricevila via email. Nessun pagamento o impegno in questa fase.</p>
      </div>
      <div class="section-divider"></div>
      <div class="section-layout">
       <div class="summary-block section-body">
        <div class="final-hero">
         <div>
-         <div class="summary-label">Selezione finale</div>
-         <div id="summary-selection" class="final-title"><span id="summary-plan">FULL</span> · <span id="summary-payment">Soluzione Unica</span></div>
-         <p id="payment-note" class="summary-note">Costo stimato sull'intera durata del contratto</p>
+         <div class="summary-label">Scelta finale</div>
+         <div id="summary-selection" class="final-title"><span id="summary-plan">FULL</span> · <span id="summary-payment">Più all'inizio</span></div>
+         <p id="payment-note" class="summary-note">Stima sulla durata selezionata</p>
         </div>
         <div class="final-hero-amount">
-         <div class="summary-label">Costo complessivo</div>
+         <div class="summary-label">Totale stimato</div>
          <div id="total-amount" class="final-total">&euro;0,00</div>
          <p id="summary-duration-note" class="summary-note">-</p>
         </div>
-       </div>
-       <div id="summary-status" class="summary-status">
-        <div class="summary-status-copy">
-         <div id="summary-status-label" class="summary-label">Scelta ottimale</div>
-         <p id="recommendation-note" class="summary-note">Confronto automatico sulla durata del contratto.</p>
+      </div>
+      <div id="summary-status" class="summary-status">
+       <div class="summary-status-copy">
+         <div id="summary-status-label" class="summary-label">Formula consigliata</div>
+         <p id="recommendation-note" class="summary-note">Confronto automatico sulla durata selezionata.</p>
         </div>
         <div class="summary-big" id="recommended-payment">-</div>
-       </div>
+      </div>
        <div class="summary-grid summary-grid--compact">
         <div class="summary-card">
          <div class="summary-label">Piano</div>
@@ -1098,7 +1132,7 @@
         </div>
         <div class="summary-card">
          <div class="summary-label">Pagamento</div>
-         <div id="summary-payment-compact" class="summary-value">Soluzione Unica</div>
+         <div id="summary-payment-compact" class="summary-value">Più all'inizio</div>
         </div>
         <div class="summary-card">
          <div class="summary-label">Tipologia contratto</div>
@@ -1119,24 +1153,23 @@
         </div>
        </div>
        <div class="cost-panel">
-        <div class="cost-row"><span>Costo attivazione</span><strong id="activation-fee">&euro;0,00</strong></div>
-        <div class="cost-row"><span>Canone servizio mensile</span><strong id="service-fee-monthly">&euro;0,00</strong></div>
-        <div class="cost-row"><span>Totale su durata contratto</span><strong id="contract-total">&euro;0,00</strong></div>
+        <div class="cost-row"><span>Quota iniziale</span><strong id="activation-fee">&euro;0,00</strong></div>
+        <div class="cost-row"><span>Quota mensile</span><strong id="service-fee-monthly">&euro;0,00</strong></div>
+        <div class="cost-row"><span>Totale stimato</span><strong id="contract-total">&euro;0,00</strong></div>
        </div>
        <p id="vat-note" class="summary-note hidden">Per questa tipologia gli importi sono da intendersi oltre IVA.</p>
-       <p class="next-step-note">Scegli l'opzione più comoda per te. Se lasci la tua email, ricevi subito una copia del preventivo e puoi scaricarla immediatamente.</p>
+       <p class="next-step-note">Se vuoi, ti inviamo subito il riepilogo via email. Nessun pagamento in questa fase.</p>
        <div class="quote-actions">
        <button type="button" id="btn-back-4" class="back-button">
          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>Indietro
         </button>
         <button type="button" id="btn-talk-operator" class="ghost-button">Parla con un operatore</button>
-        <button type="button" id="btn-download-quote" class="ghost-button">Scarica preventivo</button>
-       <button type="button" id="btn-activate-service" class="primary-button">Attiva servizio</button>
+       <button type="button" id="btn-download-quote" class="primary-button">Ricevi il riepilogo</button>
        </div>
        <form id="lead-capture" class="lead-capture hidden">
         <div class="lead-capture-copy">
-         <div id="lead-capture-title" class="lead-capture-title">Dove vuoi ricevere il preventivo?</div>
-         <p id="lead-capture-note" class="summary-note">Inserisci la tua email per ricevere subito una copia del preventivo e scaricarla immediatamente.</p>
+         <div id="lead-capture-title" class="lead-capture-title">Dove ti inviamo il riepilogo?</div>
+         <p id="lead-capture-note" class="summary-note">Ti inviamo subito una copia del riepilogo. Nessun pagamento o impegno in questa fase.</p>
         </div>
         <div class="field">
          <div class="field-copy">
@@ -1147,7 +1180,7 @@
         <p id="lead-feedback" class="lead-feedback hidden" aria-live="polite"></p>
         <div class="lead-capture-actions">
          <button type="button" id="btn-lead-cancel" class="ghost-button">Annulla</button>
-         <button type="submit" id="btn-lead-submit" class="primary-button">Invia e scarica il preventivo</button>
+         <button type="submit" id="btn-lead-submit" class="primary-button">Invia riepilogo</button>
         </div>
        </form>
        <div class="restart-row">
@@ -1168,10 +1201,10 @@
  <script src="./form-dev-utils.js"></script>
  <script>
    // Development helper: set 1-4 to open the form on a specific step after refresh.
-   const DEV_INITIAL_STEP = 4;
+   const DEV_INITIAL_STEP = 1;
 
    let currentStep = 1;
-   let selectedPlan = "full";
+   let selectedPlan = null;
    let selectedPayment = null;
    let propertyData = {};
    let currentConfig = {};
@@ -1180,9 +1213,9 @@
    let leadEmail = "";
 
    const defaultConfig = {
-     main_title: "Calcola il tuo preventivo",
-     subtitle: "Completa i passaggi per ottenere un preventivo chiaro e coerente con la tipologia di contratto selezionata.",
-     cta_calculate: "Calcola Preventivo",
+     main_title: "Confronta la formula giusta per il tuo affitto",
+     subtitle: "Inserisci i dati essenziali e confronta subito le opzioni.",
+     cta_calculate: "Confronta le opzioni",
      plan_start_name: "START",
      plan_full_name: "FULL",
      background_color: "#f4f5f7",
@@ -1336,11 +1369,12 @@
    }
 
    function getPlanLabel(plan) {
+     if (!plan) return "";
      return plan === "full" ? currentConfig.plan_full_name : currentConfig.plan_start_name;
    }
 
    function getPaymentLabel(payment) {
-     return payment === "single" ? "Unica" : "Mensilizzata";
+     return payment === "single" ? "Più all'inizio" : "Mese per mese";
    }
 
    function updatePageHeader() {
@@ -1359,6 +1393,7 @@
        const node = stepEl.querySelector(".step-node");
 
        stepEl.classList.remove("is-complete", "is-active", "is-upcoming");
+       stepEl.removeAttribute("aria-current");
 
        if (stepNumber < currentStep) {
          stepEl.classList.add("is-complete");
@@ -1368,6 +1403,7 @@
 
        if (stepNumber === currentStep) {
          stepEl.classList.add("is-active");
+         stepEl.setAttribute("aria-current", "step");
          node.textContent = stepNumber;
          return;
        }
@@ -1388,6 +1424,7 @@
      void section.offsetWidth;
      section.classList.add("fade-in");
 
+     if (step !== 4) closeLeadCapture();
      currentStep = step;
      updatePageHeader();
      updateProgress();
@@ -1410,19 +1447,11 @@
      setLeadFeedback("");
    }
 
-   function openLeadCapture(intent) {
-     const isActivation = intent === "activate";
-
+   function openLeadCapture(intent = "download") {
      leadIntent = intent;
-     document.getElementById("lead-capture-title").textContent = isActivation
-       ? "Lascia la tua email per richiedere l'attivazione"
-       : "Dove vuoi ricevere il preventivo?";
-     document.getElementById("lead-capture-note").textContent = isActivation
-       ? "Ti invieremo subito il preventivo via email e un operatore Domeo ti ricontatterà per completare l'attivazione."
-       : "Ti inviamo subito una copia del preventivo via email e puoi scaricarla immediatamente.";
-     document.getElementById("btn-lead-submit").textContent = isActivation
-       ? "Richiedi attivazione e scarica il preventivo"
-       : "Invia e scarica il preventivo";
+     document.getElementById("lead-capture-title").textContent = "Dove ti inviamo il riepilogo?";
+     document.getElementById("lead-capture-note").textContent = "Ti inviamo subito una copia del riepilogo. Nessun pagamento o impegno in questa fase.";
+     document.getElementById("btn-lead-submit").textContent = "Invia riepilogo";
      document.getElementById("lead-capture").classList.remove("hidden");
      document.getElementById("lead-email").value = leadEmail;
      setLeadFeedback("");
@@ -1552,6 +1581,32 @@
      return true;
    }
 
+   function canOpenStep(step) {
+     if (step === 1) return true;
+     if (step <= currentStep) return true;
+     if (!validateStep1()) return false;
+
+     if (step === 2) return true;
+     if (!selectedPlan) {
+       showToast("Scegli una formula prima di proseguire", "error");
+       return false;
+     }
+
+     if (step === 3) return true;
+     if (!selectedPayment) {
+       showToast("Scegli come distribuire il costo", "error");
+       return false;
+     }
+
+     calculateQuote();
+     return true;
+   }
+
+   function navigateToStep(step) {
+     if (!sections[step] || step === currentStep || !canOpenStep(step)) return;
+     showSection(step);
+   }
+
    function selectPlan(plan) {
      selectedPlan = plan;
 
@@ -1559,6 +1614,7 @@
      const planFull = document.getElementById("plan-full");
      const checkStart = document.getElementById("check-start");
      const checkFull = document.getElementById("check-full");
+     const step2Button = document.getElementById("btn-step2");
 
      planStart.classList.toggle("selected", plan === "start");
      planFull.classList.toggle("selected", plan === "full");
@@ -1566,6 +1622,7 @@
      planFull.setAttribute("aria-pressed", String(plan === "full"));
      checkStart.classList.toggle("hidden", plan !== "start");
      checkFull.classList.toggle("hidden", plan !== "full");
+     step2Button.disabled = !plan;
    }
 
    function selectPayment(payment) {
@@ -1594,6 +1651,10 @@
      });
    }
 
+   Object.entries(progressSteps).forEach(([stepKey, stepEl]) => {
+     stepEl.addEventListener("click", () => navigateToStep(Number(stepKey)));
+   });
+
    function buildPaymentNote(quote) {
      const vatNote = quote.vatExcluded ? " oltre IVA" : "";
 
@@ -1602,10 +1663,10 @@
      }
 
      if (selectedPlan === "full") {
-       return `${formatCurrency(quote.activationFee)} una tantum + ${formatCurrency(quote.recurringMonthlyFee)}/mese${vatNote}`;
+       return `${formatCurrency(quote.activationFee)} iniziali + ${formatCurrency(quote.recurringMonthlyFee)}/mese${vatNote}`;
      }
 
-     return `${formatCurrency(quote.activationFee)} una tantum${vatNote}`;
+     return `${formatCurrency(quote.activationFee)} iniziali${vatNote}`;
    }
 
    function escapeHtml(value) {
@@ -1627,7 +1688,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Preventivo Domeo</title>
+ <title>Riepilogo Domeo</title>
  <style>
   :root { color-scheme: light; }
   body {
@@ -1739,14 +1800,14 @@
 <body>
  <div class="sheet">
   <section class="hero">
-   <p class="eyebrow">Preventivo Domeo</p>
+   <p class="eyebrow">Riepilogo Domeo</p>
    <h1>${escapeHtml(getPlanLabel(selectedPlan))} · ${escapeHtml(getPaymentLabel(selectedPayment))}</h1>
-   <p>Preventivo generato il ${escapeHtml(formatTimestamp())} per ${escapeHtml(email)}.</p>
+   <p>Riepilogo generato il ${escapeHtml(formatTimestamp())} per ${escapeHtml(email)}.</p>
   </section>
   <section class="section">
    <div class="meta">
     <div class="card">
-     <span class="label">Costo complessivo</span>
+     <span class="label">Totale stimato</span>
      <div class="total">${escapeHtml(formatCurrency(currentQuote.totalContractCost))}</div>
     </div>
     <div class="card">
@@ -1767,9 +1828,9 @@
    </div>
   </section>
   <section class="section">
-   <div class="cost-row"><span>Costo attivazione</span><strong>${escapeHtml(formatCurrency(currentQuote.activationFee))}</strong></div>
-   <div class="cost-row"><span>Canone servizio mensile</span><strong>${escapeHtml(formatCurrency(currentQuote.recurringMonthlyFee))}</strong></div>
-   <div class="cost-row"><span>Totale su durata contratto</span><strong>${escapeHtml(formatCurrency(currentQuote.totalContractCost))}</strong></div>
+   <div class="cost-row"><span>Quota iniziale</span><strong>${escapeHtml(formatCurrency(currentQuote.activationFee))}</strong></div>
+   <div class="cost-row"><span>Quota mensile</span><strong>${escapeHtml(formatCurrency(currentQuote.recurringMonthlyFee))}</strong></div>
+   <div class="cost-row"><span>Totale stimato</span><strong>${escapeHtml(formatCurrency(currentQuote.totalContractCost))}</strong></div>
    ${vatNote}
   </section>
  </div>
@@ -1826,16 +1887,9 @@
      notifyHostEvent("preventivatore:lead-submit", payload);
      downloadQuote(leadEmail);
 
-     const feedbackMessage = leadIntent === "activate"
-       ? `Richiesta inviata. Ti scriveremo a ${leadEmail} e un operatore Domeo ti contatterà a breve.`
-       : `Perfetto, il preventivo è stato inviato a ${leadEmail} e il download è partito.`;
+     const feedbackMessage = `Perfetto, il riepilogo è stato inviato a ${leadEmail} e il download è partito.`;
      setLeadFeedback(feedbackMessage);
-     showToast(
-       leadIntent === "activate"
-         ? "Richiesta inviata. Controlla la tua email per il preventivo."
-         : "Controlla la tua email: il preventivo è in arrivo.",
-       "info"
-     );
+     showToast("Controlla la tua email: il riepilogo è in arrivo.", "info");
    }
 
    function getComparisonDurationLabel(duration) {
@@ -1855,50 +1909,43 @@
    function getPaymentContent(singleQuote, monthlyQuote) {
      if (selectedPlan === "full") {
        return {
-         sectionText: "La scelta dipende dalle tue preferenze: pagamento unico iniziale più una piccola quota mensile, oppure rate mensili costanti.",
-         overviewNote: "Scegli se concentrare il costo all'inizio o distribuirlo con rate mensili costanti.",
-         singleMode: "Una tantum + quota ricorrente",
+         sectionText: "La protezione non cambia: scegli solo se concentrare di più il costo all'inizio o distribuirlo nel tempo.",
+         overviewNote: "Stessa copertura, cambia solo come distribuisci il costo.",
+         singleMode: "Più all'inizio",
          singlePoints: [
-           "Paghi una mensilità completa una sola volta all'inizio.",
-           `Più ${formatCurrency(singleQuote.recurringMonthlyFee)}/mese per la gestione del contratto.`,
-           "Ti copre per tutta la durata del contratto.",
-           "Costo complessivo basato sulla durata del contratto."
+           `Quota iniziale di ${formatCurrency(singleQuote.activationFee)}.`,
+           `Poi ${formatCurrency(singleQuote.recurringMonthlyFee)}/mese per la gestione.`
          ],
-         singleNote: "Ingresso più alto, poi quota fissa mensile ridotta.",
-         monthlyMode: "Ricorrente",
+         singleNote: "Più costo all'inizio, poi una quota mensile ridotta.",
+         monthlyMode: "Mese per mese",
          monthlyPoints: [
-           "Paghi il 5% dell'importo mensile da proteggere ogni mese.",
-           `Minimo ${formatCurrency(MIN_MONTHLY_FEE)}/mese.`,
-           "Massima flessibilità.",
-           "Paghi mese per mese."
+           "Nessuna quota iniziale.",
+           `${formatCurrency(monthlyQuote.recurringMonthlyFee)}/mese per tutta la durata.`
          ],
-         monthlyNote: `Nessun costo iniziale, ${formatCurrency(monthlyQuote.recurringMonthlyFee)}/mese per tutta la durata.`
+         monthlyNote: "Costo distribuito nel tempo, con meno peso iniziale."
        };
      }
 
      return {
-       sectionText: "La scelta dipende dalle tue preferenze: pagamento unico iniziale oppure rate mensili costanti.",
-       overviewNote: "Scegli se saldare subito una mensilità o distribuire il costo mese per mese.",
-       singleMode: "Una tantum",
+       sectionText: "La protezione non cambia: scegli solo se concentrare di più il costo all'inizio o distribuirlo nel tempo.",
+       overviewNote: "Stessa copertura, cambia solo come distribuisci il costo.",
+       singleMode: "Più all'inizio",
        singlePoints: [
-         `Paghi una mensilità completa una sola volta all'inizio (minimo ${formatCurrency(MIN_SINGLE_FEE)}).`,
-         "Ti copre per tutta la durata del contratto.",
-         "Costo complessivo basato sulla durata del contratto."
+         `Quota iniziale di ${formatCurrency(singleQuote.activationFee)}.`,
+         "Nessuna quota mensile ricorrente."
        ],
-       singleNote: "Un solo pagamento iniziale, senza canone mensile.",
-       monthlyMode: "Ricorrente",
+       singleNote: "Più costo all'inizio, senza quota mensile.",
+       monthlyMode: "Mese per mese",
        monthlyPoints: [
-         "Paghi il 5% dell'importo mensile da proteggere ogni mese.",
-         `Minimo ${formatCurrency(MIN_MONTHLY_FEE)}/mese.`,
-         "Massima flessibilità.",
-         "Paghi mese per mese."
+         "Nessuna quota iniziale.",
+         `${formatCurrency(monthlyQuote.recurringMonthlyFee)}/mese per tutta la durata.`
        ],
-       monthlyNote: `Nessun costo iniziale, ${formatCurrency(monthlyQuote.recurringMonthlyFee)}/mese per tutta la durata.`
+       monthlyNote: "Costo distribuito nel tempo, con meno peso iniziale."
      };
    }
 
    function updatePaymentComparison() {
-     if (!propertyData.contractTypeValue) return;
+     if (!propertyData.contractTypeValue || !selectedPlan) return;
 
      const quoteOptions = {
        plan: selectedPlan,
@@ -1920,21 +1967,23 @@
      const durationLabel = getComparisonDurationLabel(singleQuote.duration);
      const paymentContent = getPaymentContent(singleQuote, monthlyQuote);
      const overviewNote = recommendation.savings === 0
-       ? "Le due formule hanno lo stesso costo complessivo."
+       ? "Le due formule hanno lo stesso totale stimato."
        : `${getPaymentLabel(recommendedPayment)} ti fa risparmiare ${formatCurrency(recommendation.savings)}. ${paymentContent.overviewNote}`;
 
      document.getElementById("payment-section-text").textContent = paymentContent.sectionText;
-     document.getElementById("payment-overview-title").textContent = `${getPlanLabel(selectedPlan)} su ${durationLabel}`;
+     document.getElementById("payment-overview-title").textContent = `Confronto su ${durationLabel}`;
      document.getElementById("payment-overview-note").textContent = overviewNote;
      document.getElementById("payment-overview-mark").textContent = `Importo protetto ${formatCurrency(singleQuote.protectedAmount)}`;
      document.getElementById("payment-single-mode").textContent = paymentContent.singleMode;
      document.getElementById("payment-monthly-mode").textContent = paymentContent.monthlyMode;
+     document.getElementById("payment-single-title").textContent = paymentContent.singleMode;
+     document.getElementById("payment-monthly-title").textContent = paymentContent.monthlyMode;
 
      document.getElementById("payment-single-total").textContent = formatCurrency(singleQuote.totalContractCost);
      document.getElementById("payment-single-now").textContent = formatCurrency(singleQuote.activationFee);
      document.getElementById("payment-single-monthly").textContent = formatCurrency(singleQuote.recurringMonthlyFee);
      document.getElementById("payment-single-contract").textContent = formatCurrency(singleQuote.totalContractCost);
-     document.getElementById("payment-single-caption").textContent = `Totale su ${durationLabel}`;
+     document.getElementById("payment-single-caption").textContent = `Totale stimato su ${durationLabel}`;
      setPaymentPoints("payment-single", paymentContent.singlePoints);
      document.getElementById("payment-single-note").textContent = paymentContent.singleNote;
 
@@ -1942,7 +1991,7 @@
      document.getElementById("payment-monthly-now").textContent = formatCurrency(monthlyQuote.activationFee);
      document.getElementById("payment-monthly-monthly").textContent = formatCurrency(monthlyQuote.recurringMonthlyFee);
      document.getElementById("payment-monthly-contract").textContent = formatCurrency(monthlyQuote.totalContractCost);
-     document.getElementById("payment-monthly-caption").textContent = `Totale su ${durationLabel}`;
+     document.getElementById("payment-monthly-caption").textContent = `Totale stimato su ${durationLabel}`;
      setPaymentPoints("payment-monthly", paymentContent.monthlyPoints);
      document.getElementById("payment-monthly-note").textContent = paymentContent.monthlyNote;
 
@@ -1953,6 +2002,10 @@
      document.getElementById("payment-monthly").classList.toggle("recommended", monthlyRecommended);
      document.getElementById("payment-single-badge").classList.toggle("hidden", !singleRecommended);
      document.getElementById("payment-monthly-badge").classList.toggle("hidden", !monthlyRecommended);
+
+     if (!selectedPayment) {
+       selectPayment(recommendedPayment);
+     }
    }
 
    function updateQuoteSummary(quote) {
@@ -1961,7 +2014,7 @@
      const durationLabel = propertyData.durationLabel || formatDuration(quote.duration);
      const selectedIsOptimal = selectedPayment === quote.recommendation.recommendedPayment || quote.recommendation.savings === 0;
      const recommendationNote = quote.recommendation.savings === 0
-       ? "Le due formule hanno lo stesso costo complessivo."
+       ? "Le due formule hanno lo stesso totale stimato."
        : selectedIsOptimal
          ? `${getPaymentLabel(selectedPayment)} è già la formula più conveniente.`
          : `${recommendationLabel} fa risparmiare ${formatCurrency(quote.recommendation.savings)} rispetto a ${alternativeLabel}.`;
@@ -1984,13 +2037,13 @@
 
      summaryStatus.classList.toggle("is-optimal", selectedIsOptimal);
      summaryStatus.classList.toggle("has-savings", !selectedIsOptimal);
-     document.getElementById("summary-status-label").textContent = selectedIsOptimal ? "Scelta ottimale" : "Puoi spendere meno";
-     document.getElementById("recommended-payment").textContent = selectedIsOptimal ? "Confermata" : recommendationLabel;
+     document.getElementById("summary-status-label").textContent = selectedIsOptimal ? "Formula consigliata" : "Alternativa più leggera";
+     document.getElementById("recommended-payment").textContent = selectedIsOptimal ? "Già selezionata" : recommendationLabel;
      document.getElementById("recommendation-note").textContent = recommendationNote;
 
      document.getElementById("total-amount").textContent = formatCurrency(quote.totalContractCost);
      document.getElementById("summary-duration-note").textContent = `su ${durationLabel}`;
-     document.getElementById("payment-note").textContent = `${buildPaymentNote(quote)}. Costo complessivo stimato sulla durata selezionata (${durationLabel}).`;
+     document.getElementById("payment-note").textContent = `${buildPaymentNote(quote)}. Stima sulla durata selezionata (${durationLabel}).`;
 
      document.getElementById("vat-note").classList.toggle("hidden", !quote.vatExcluded);
    }
@@ -2032,7 +2085,9 @@
 
    bindSelectableCard(document.getElementById("plan-start"), () => selectPlan("start"));
    bindSelectableCard(document.getElementById("plan-full"), () => selectPlan("full"));
-   document.getElementById("btn-step2").addEventListener("click", () => showSection(3));
+   document.getElementById("btn-step2").addEventListener("click", () => {
+     showSection(3);
+   });
    document.getElementById("btn-back-2").addEventListener("click", () => showSection(1));
 
    bindSelectableCard(document.getElementById("payment-single"), () => selectPayment("single"));
@@ -2040,7 +2095,7 @@
 
    document.getElementById("btn-step3").addEventListener("click", () => {
      if (!selectedPayment) {
-       showToast("Seleziona una modalità di attivazione", "error");
+       showToast("Scegli come distribuire il costo", "error");
        return;
      }
 
@@ -2063,15 +2118,14 @@
          property: { ...propertyData },
          quote: currentQuote
        });
-     showToast("Ti mettiamo in contatto con un operatore Domeo. Ti ricontatteremo al più presto.", "info");
+     showToast("Un operatore Domeo ti ricontatterà al più presto.", "info");
    });
    document.getElementById("btn-download-quote").addEventListener("click", () => openLeadCapture("download"));
-   document.getElementById("btn-activate-service").addEventListener("click", () => openLeadCapture("activate"));
    document.getElementById("btn-lead-cancel").addEventListener("click", () => closeLeadCapture());
    document.getElementById("lead-capture").addEventListener("submit", handleLeadCapture);
 
    document.getElementById("btn-restart").addEventListener("click", () => {
-     selectedPlan = "full";
+     selectedPlan = null;
      propertyData = {};
      currentQuote = null;
      leadEmail = "";
@@ -2083,7 +2137,7 @@
      document.getElementById("condo-fees").value = "";
      document.getElementById("address").value = "";
 
-     selectPlan("full");
+     selectPlan(null);
      resetPaymentSelection();
      closeLeadCapture({ preserveEmail: false });
      showSection(1);
