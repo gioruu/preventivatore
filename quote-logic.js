@@ -33,45 +33,24 @@
     });
   }
 
+  const CONTRACT_CATEGORIES = [
+    { value: "abitativo", label: "Abitativo" },
+    { value: "non-abitativo", label: "Non abitativo" }
+  ];
+
   const CONTRACT_TYPES = [
     {
-      value: "transitorio",
-      label: "Transitorio",
-      durationOptions: createMonthlyOptions(6, 18),
-      defaultDuration: 12,
-      vatExcluded: false
-    },
-    {
-      value: "studenti",
-      label: "Studenti",
-      durationOptions: createMonthlyOptions(6, 36),
-      defaultDuration: 12,
-      vatExcluded: false
-    },
-    {
-      value: "commerciale",
-      label: "Commerciale (6+6)",
-      duration: 72,
-      durationLabel: "6+6",
-      vatExcluded: true
-    },
-    {
-      value: "non-abitativo",
-      label: "Non abitativo",
-      durationOptions: createYearlyOptions(1, 6),
-      defaultDuration: 12,
-      vatExcluded: true
-    },
-    {
+      category: "abitativo",
       value: "abitativo",
-      label: "Abitativo (4+4)",
+      label: "Abitativo 4+4",
       duration: 48,
       durationLabel: "4+4",
       vatExcluded: false
     },
     {
+      category: "abitativo",
       value: "abitativo-concordato",
-      label: "Abitativo - Concordato",
+      label: "Abitativo concordato",
       durationOptions: [
         { value: 36, label: "3+2" },
         { value: 48, label: "4+2" },
@@ -80,13 +59,65 @@
       ],
       defaultDuration: 36,
       vatExcluded: false
+    },
+    {
+      category: "abitativo",
+      value: "studenti",
+      label: "Studenti",
+      durationOptions: createMonthlyOptions(6, 36),
+      defaultDuration: 12,
+      vatExcluded: false
+    },
+    {
+      category: "abitativo",
+      value: "transitorio",
+      label: "Transitorio",
+      durationOptions: createMonthlyOptions(6, 18),
+      defaultDuration: 12,
+      vatExcluded: false
+    },
+    {
+      category: "non-abitativo",
+      value: "commerciale",
+      label: "Commerciale",
+      duration: 72,
+      durationLabel: "6+6",
+      vatExcluded: true
+    },
+    {
+      category: "non-abitativo",
+      value: "non-abitativo",
+      label: "Altri non abitativi",
+      durationOptions: createYearlyOptions(1, 6),
+      defaultDuration: 12,
+      vatExcluded: true
     }
   ];
 
-  function getDurationOptions(contractType) {
-    if (!contractType || !contractType.durationOptions) return [];
+  function getContractTypesByCategory(categoryValue) {
+    return CONTRACT_TYPES.filter(({ category }) => category === categoryValue);
+  }
 
-    return contractType.durationOptions.map((option) => (
+  function getContractCategory(contractTypeValue) {
+    const contractType = typeof contractTypeValue === "string"
+      ? getContractType(contractTypeValue)
+      : contractTypeValue;
+
+    return contractType ? contractType.category : "";
+  }
+
+  function requiresDurationSelection(contractTypeValue) {
+    return getDurationOptions(contractTypeValue).length > 0;
+  }
+
+  function getDurationOptions(contractType) {
+    const resolvedContractType = typeof contractType === "string"
+      ? getContractType(contractType)
+      : contractType;
+
+    if (!resolvedContractType || !resolvedContractType.durationOptions) return [];
+
+    return resolvedContractType.durationOptions.map((option) => (
       typeof option === "number"
         ? { value: option, label: `${option} mesi` }
         : option
@@ -240,6 +271,7 @@
   }
 
   return {
+    CONTRACT_CATEGORIES,
     CONTRACT_TYPES,
     FULL_SINGLE_MONTHLY_FEE,
     MIN_MONTHLY_FEE,
@@ -247,13 +279,16 @@
     MONTHLY_RATE,
     calculatePlanCost,
     calculateQuote,
+    getContractCategory,
+    getContractType,
+    getContractTypesByCategory,
     getDurationLabel,
     getDurationOptions,
-    getContractType,
     getMonthlyBaseFee,
     getProtectedAmount,
     getRecommendation,
     getSingleBaseFee,
+    requiresDurationSelection,
     resolveDuration,
     roundCurrency
   };

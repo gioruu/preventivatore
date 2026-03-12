@@ -2,11 +2,15 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
+  CONTRACT_CATEGORIES,
   CONTRACT_TYPES,
   calculateQuote,
+  getContractCategory,
+  getContractTypesByCategory,
   getDurationLabel,
   getDurationOptions,
   getRecommendation,
+  requiresDurationSelection,
   resolveDuration
 } = require("./quote-logic.js");
 const {
@@ -17,16 +21,36 @@ const {
 
 test("exposes the contract types derived from the pricing sheet", () => {
   assert.deepEqual(
-    CONTRACT_TYPES.map(({ label }) => label),
+    CONTRACT_CATEGORIES,
     [
-      "Transitorio",
-      "Studenti",
-      "Commerciale (6+6)",
-      "Non abitativo",
-      "Abitativo (4+4)",
-      "Abitativo - Concordato"
+      { value: "abitativo", label: "Abitativo" },
+      { value: "non-abitativo", label: "Non abitativo" }
     ]
   );
+  assert.deepEqual(
+    CONTRACT_TYPES.map(({ label }) => label),
+    [
+      "Abitativo 4+4",
+      "Abitativo concordato",
+      "Studenti",
+      "Transitorio",
+      "Commerciale",
+      "Altri non abitativi"
+    ]
+  );
+});
+
+test("groups contract types behind the new macro categories", () => {
+  assert.deepEqual(
+    getContractTypesByCategory("abitativo").map(({ value }) => value),
+    ["abitativo", "abitativo-concordato", "studenti", "transitorio"]
+  );
+  assert.deepEqual(
+    getContractTypesByCategory("non-abitativo").map(({ value }) => value),
+    ["commerciale", "non-abitativo"]
+  );
+  assert.equal(getContractCategory("commerciale"), "non-abitativo");
+  assert.equal(getContractCategory("studenti"), "abitativo");
 });
 
 test("supports month-by-month durations for transitorio contracts", () => {
@@ -47,7 +71,7 @@ test("supports month-by-month durations for transitorio contracts", () => {
 });
 
 test("supports studenti durations up to 36 months", () => {
-  const options = getDurationOptions(CONTRACT_TYPES[1]);
+  const options = getDurationOptions(CONTRACT_TYPES[2]);
 
   assert.equal(options[0].label, "6 mesi");
   assert.equal(options.at(-1).label, "36 mesi");
@@ -126,6 +150,14 @@ test("exposes the expected labels for variable duration selectors", () => {
   assert.equal(getDurationLabel("non-abitativo", 72), "6 anni");
   assert.equal(getDurationLabel("abitativo-concordato", 48), "4+2");
   assert.equal(getDurationLabel("commerciale", 72), "6+6");
+});
+
+test("flags only variable contracts as requiring an explicit duration choice", () => {
+  assert.equal(requiresDurationSelection("abitativo"), false);
+  assert.equal(requiresDurationSelection("commerciale"), false);
+  assert.equal(requiresDurationSelection("transitorio"), true);
+  assert.equal(requiresDurationSelection("studenti"), true);
+  assert.equal(requiresDurationSelection("abitativo-concordato"), true);
 });
 
 test("computes the cheaper payment option for the selected plan", () => {
