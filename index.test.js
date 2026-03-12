@@ -50,6 +50,8 @@ test("step 2 compares outcomes in plain language and requires an explicit plan c
   assert.match(html, /Gestiti tramite Domeo/);
   assert.match(html, /<p id="plan-full-name" class="plan-product-name">FULL<\/p>/);
   assert.match(html, /\.plan-facts {\s+display: flex;\s+flex-direction: column;/s);
+  assert.match(html, /<div class="option-grid plan-grid">[\s\S]*id="plan-full"[\s\S]*<\/div>\s*<strong class="decision-note-title">/);
+  assert.doesNotMatch(html, /decision-banner/);
   assert.match(html, /<button type="button" id="btn-step2" class="primary-button" disabled>/);
   assert.match(html, /step2Button\.disabled = !plan;/);
 });
@@ -67,14 +69,15 @@ test("step 3 stays neutral, highlights importo protetto, and keeps mese per mese
   assert.match(html, /<span class="step-title">Costo<\/span>/);
   assert.match(html, /<h2 class="section-heading">Come vuoi distribuire il costo\?<\/h2>/);
   assert.match(html, /Scegli solo come preferisci pagare il servizio\./);
-  assert.match(html, /id="payment-single-mode" class="payment-mode">All'inizio</);
+  assert.match(html, /id="payment-single-mode" class="payment-mode">Una tantum</);
   assert.match(html, /id="payment-monthly-title" class="option-title">Ogni mese</);
-  assert.match(html, /id="payment-overview-amount" class="comparison-banner-amount">/);
+  assert.match(html, /id="payment-monthly-caption" class="payment-caption">Canone gestione pagamenti</);
   assert.match(html, /id="payment-monthly-badge" class="option-badge">Più popolare</);
   assert.match(html, /<div class="payment-row"><span>All'inizio<\/span><strong id="payment-single-now">/);
   assert.match(html, /<div class="payment-row"><span>Ogni mese<\/span><strong id="payment-monthly-monthly">/);
   assert.match(html, /Prima dell'attivazione serve la verifica Domeo/);
   assert.match(html, /function setPaymentDisplay\(prefix, display\)/);
+  assert.doesNotMatch(html, /payment-overview-title|payment-overview-amount|comparison-banner/);
   assert.doesNotMatch(html, /shouldAutoSelectRecommendedPayment/);
   assert.match(html, /<button type="button" id="btn-step3" class="primary-button" disabled>\s+Vedi riepilogo/);
 });
@@ -114,10 +117,10 @@ test("selectable cards stay keyboard accessible", () => {
 });
 
 test("local runs keep the configured bootstrap step and load host sdk optionally", () => {
-  assert.match(html, /const DEV_INITIAL_STEP = 1;/);
+  assert.match(html, /const DEV_INITIAL_STEP = 2;/);
   assert.match(html, /<link rel="icon" href="data:,">/);
   assert.match(html, /function shouldLoadOptionalSdk\(\)/);
-  assert.match(html, /async function loadScript\(src\)/);
+  assert.match(html, /async function loadScript\(src, options = \{\}\)/);
   assert.doesNotMatch(html, /<script src="\/_sdk\/element_sdk\.js"><\/script>/);
   assert.doesNotMatch(html, /<script src="\/_sdk\/data_sdk\.js" type="text\/javascript"><\/script>/);
 });
